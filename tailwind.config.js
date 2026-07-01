@@ -7,8 +7,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: '#2d8c57',
-        accent: '#1e6040',
+brand: '#3471eb',   // Primary Blue
+accent: '#2563EB',  // Royal Blue
       },
       fontFamily: {
         display: ['Playfair Display', 'serif'],
