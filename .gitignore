@@ -1,0 +1,96 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables
+.env
+.env.*
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Static files collected by collectstatic
+staticfiles/
+
+# Migrations (optional)
+# Uncomment ONLY if you never want to track migrations
+# */migrations/*
+# !*/migrations/__init__.py
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Jupyter
+.ipynb_checkpoints/
+
+# mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Render
+.render/
+
+# Secrets
+*.pem
+*.key
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs (if applicable)
+dist/
+build/
+
+# Vite
+.vite/
+
+# Parcel
+.parcel-cache/
+
+# Next.js
+.next/
+
+# Nuxt
+.nuxt/
+
+# SvelteKit
+.svelte-kit/

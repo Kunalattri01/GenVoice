@@ -1,0 +1,92 @@
+{% load static %}
+<!-- FOOTER -->
+<footer class="bg-gray-900 text-gray-400 mt-14 pt-12 pb-6">
+
+    <div class="max-w-screen-xl mx-auto px-4">
+        <!-- Top footer grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+            <!-- Brand -->
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-brand font-display font-black text-3xl leading-none">
+                        <img src="{% static 'genvoice-logo.webp' %}" alt="footer-genvoice-logo" class="h-16 w-20 py-0.5 brightness-0 invert">
+                    </span>
+                </div>
+
+                <p class="text-[13px] leading-relaxed mb-4">Your trusted source for news, celebrity, food, travel and beauty from around the globe — since 2021.</p>
+
+                <!-- Social icons -->
+                <div class="flex gap-2">
+                    <div class="soc facebook w-8 h-8 text-xs cursor-pointer hover:opacity-80 transition-opacity">
+                        <a href="https://www.facebook.com/genvoicenetwork/" target="_blank">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                    </div>
+
+                    <div class="soc twitter w-8 h-8 text-xs cursor-pointer hover:opacity-80 transition-opacity">
+                        <a href="https://x.com/genvoicenetwork" target="_blank">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    </div>
+                    <div class="soc instagram w-8 h-8 text-xs cursor-pointer hover:opacity-80 transition-opacity">
+                        <a href="https://www.instagram.com/genvoicenetwork/" target="_blank">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    </div>
+                    <div class="soc youtube w-8 h-8 text-xs cursor-pointer hover:opacity-80 transition-opacity">
+                        <a href="https://www.youtube.com/@genvoicenetwork" target="_blank">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div>
+                <p class="text-white font-bold text-[11px] uppercase tracking-widest mb-4">Categories</p>
+                <ul class="space-y-2 text-[13px]">
+                    <li><a href="#" class="hover:text-brand transition-colors">→ News</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Travel</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Celebrity</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Food</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Make-Up</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Marketing</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Finance</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">→ Tech</a></li>
+                </ul>
+            </div>
+
+            <!-- Company -->
+            <div>
+                <p class="text-white font-bold text-[11px] uppercase tracking-widest mb-4">Company</p>
+                <ul class="space-y-2 text-[13px]">
+                    <li><a href="#" class="hover:text-brand transition-colors">About Us</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">Advertise With Us</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">Contact</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">Write For Us</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="hover:text-brand transition-colors">Cookie Policy</a></li>
+                </ul>
+            </div>
+            
+            <!-- Newsletter footer -->
+            <div>
+                <p class="text-white font-bold text-[11px] uppercase tracking-widest mb-4">Newsletter</p>
+                <p class="text-[13px] mb-3">Subscribe to get the latest stories in your inbox every morning.</p>
+                <input type="email" placeholder="Your email address" class="w-full bg-gray-800 border border-gray-700 text-white text-[13px] px-3 py-2 outline-none focus:border-brand mb-2 rounded-sm">
+                <button class="w-full bg-brand text-white text-[11px] font-bold uppercase tracking-widest py-2 hover:bg-accent transition-colors rounded-sm">Subscribe</button>
+            </div>
+        </div>
+
+        <!-- Footer bottom -->
+        <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p class="text-[12px]">© 2024 GenVoice Network. All rights reserved.</p>
+            <div class="flex gap-4 text-[12px]">
+                <a href="#" class="hover:text-brand transition-colors">Privacy</a>
+                <a href="#" class="hover:text-brand transition-colors">Terms</a>
+                <a href="#" class="hover:text-brand transition-colors">Cookies</a>
+            </div>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,655 @@
+{% extends "base/base.html" %}
+
+{% block bodyContent %}
+    <!-- ===================== MAIN CONTENT ===================== -->
+    <main class="max-w-screen-2xl mx-auto px-4 py-6">
+
+    <!-- ===== ROW 1: LEFT CARDS | CENTER HEROES | RIGHT SIDEBAR ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-6">
+
+        <!-- LEFT -->
+        <div class="flex flex-col gap-6">
+            {% for article in left_news %}
+            <article class="cursor-pointer group {% if not forloop.last %}border-b border-gray-300 pb-4{% endif %}">
+                <div class="img-zoom rounded-sm" style="height:195px">
+                    <img src="{{ article.image }}" alt="{{ article.title }}">
+                </div>
+
+                <div class="mt-3">
+                    <p class="cat mb-1"> {{ article.source.title }} </p>
+
+                    <h3 class="serif font-bold text-[17px] leading-snug mb-1">
+                        <a href="{{ article.url }}" target="_blank" class="art-title transition-colors"> {{ article.title }} </a>
+                    </h3>
+
+                    <p class="text-gray-500 text-[13px] leading-relaxed line-clamp-2">
+                        {{ article.body|truncatewords:20 }}
+                    </p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- CENTER -->
+        <div class="flex flex-col gap-4 px-4 border-x border-gray-300">
+            <!-- Big hero -->
+            {% if hero_main %}
+                <article class="overlay-card cursor-pointer rounded-sm" style="height:315px">
+                    <img src="{{ hero_main.image }}" alt="">
+
+                    <div class="overlay-content">
+                        <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">{{ hero_main.source.title }}</span>
+                        <h2 class="serif font-black text-white text-[28px] leading-tight mb-2">{{ hero_main.title }}</h2>
+                        <p class="text-gray-300 text-[13px] line-clamp-2">{{ hero_main.body|truncatewords:25 }}</p>
+                    </div>
+                </article>
+            {% endif %}
+
+            <!-- Second hero -->
+            {% if hero_second %}
+            <article class="overlay-card cursor-pointer rounded-sm" style="height:280px">
+                <img src="{{ hero_second.image }}" alt="">
+
+                <div class="overlay-content">
+                    <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">{{ hero_second.source.title }}</span>
+                    <h2 class="serif font-black text-white text-[24px] leading-tight mb-2">{{ hero_second.title }}</h2>
+                    <p class="text-gray-300 text-[13px] line-clamp-2">{{ hero_second.body|truncatewords:20 }}</p>
+                </div>
+            </article>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT SIDEBAR list -->
+        <div class="divide-y divide-gray-300">
+            {% for article in sidebar_news %}
+                <article class="flex gap-3 py-3 cursor-pointer">
+
+                    <div class="img-zoom rounded-sm shrink-0 w-[88px] h-[65px]">
+
+                        <img src="{{ article.image }}" alt="">
+
+                    </div>
+
+                    <div>
+                        <p class="cat mb-[2px]"> {{ article.source.title }} </p>
+
+                        <h4 class="serif font-bold text-[13px] leading-snug">
+                            <a href="{{ article.url }}" target="_blank" class="art-title"> {{ article.title|truncatewords:8 }} </a>
+                        </h4>
+
+                        <p class="text-gray-400 text-[11px] mt-1"> {{ article.date }} </p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== SUBSCRIBE BANNER ===== -->
+    <div class="sub-bar my-8 -mx-4 px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-white">
+            <p class="text-[11px] font-bold uppercase tracking-widest opacity-80">Newsletter</p>
+            <p class="serif font-bold text-lg">Get the best stories delivered to your inbox</p>
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto">
+            <input type="email" placeholder="Your email address" class="flex-1 sm:w-64 px-4 py-2 text-sm outline-none border-0 rounded-sm text-gray-900">
+            <button class="bg-gray-900 text-white text-[11px] font-bold uppercase tracking-widest px-5 py-2 rounded-sm hover:bg-gray-700 transition-colors whitespace-nowrap">Subscribe</button>
+        </div>
+    </div>
+
+    <!-- ===== ROW 2: POLITICS SECTION + SIDEBAR ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 mt-4">
+        <div>
+            <div class="sec-header">
+                <span>Politics</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <!-- BIG ARTICLE -->
+                {% with article=politics_news.0 %}
+                {% if article %}
+                <article class="cursor-pointer md:row-span-2">
+
+                    <div class="img-zoom rounded-sm mb-3" style="height:260px">
+                        <img src="{{ article.image }}" alt="{{ article.title }}">
+                    </div>
+
+                    <p class="cat mb-1">
+                        {{ article.source.title }}
+                    </p>
+
+                    <h3 class="serif font-bold text-[19px] leading-snug mb-2">
+                        <a href="{{ article.url }}" target="_blank" class="art-title">
+                            {{ article.title }}
+                        </a>
+                    </h3>
+
+                    <p class="text-gray-500 text-[13px] leading-relaxed line-clamp-3">
+                        {{ article.body|truncatewords:35 }}
+                    </p>
+
+                    <p class="text-gray-400 text-[11px] mt-2">
+                        {{ article.date }}
+                    </p>
+
+                </article>
+                {% endif %}
+                {% endwith %}
+
+                <!-- SMALL ARTICLES -->
+                {% for article in politics_news|slice:"1:" %}
+                <article class="cursor-pointer flex gap-3">
+
+                    <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
+                        <img src="{{ article.image }}" alt="{{ article.title }}">
+                    </div>
+
+                    <div>
+
+                        <p class="cat mb-[2px]">
+                            {{ article.source.title }}
+                        </p>
+
+                        <h4 class="serif font-bold text-[14px] leading-snug">
+                            <a href="{{ article.url }}" target="_blank" class="art-title">
+                                {{ article.title|truncatewords:12 }}
+                            </a>
+                        </h4>
+
+                        <p class="text-gray-400 text-[11px] mt-1">
+                            {{ article.date }}
+                        </p>
+
+                    </div>
+
+                </article>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside>
+            <!-- Popular Posts -->
+            <div class="mb-8">
+                <p class="widget-title">Popular Posts</p>
+                <div class="divide-y divide-gray-100">
+                    {% for article in popular_posts %}
+                        <article class="flex gap-3 py-3 cursor-pointer">
+                            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
+                                <img src="{{ article.image }}" alt="">
+                            </div>
+
+                            <div>
+                                <p class="cat mb-[2px]"> {{ article.source.title }} </p>
+
+                                <h4 class="serif font-bold text-[13px] leading-snug">
+                                    <a href="{{ article.url }}" target="_blank" class="art-title"> {{ article.title|truncatewords:8 }} </a>
+                                </h4>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <!-- Ad Widget -->
+        <div class="ad-banner mb-8">
+            <p class="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Advertisement</p>
+            <p class="serif font-black text-2xl mb-1">Premium Access</p>
+            <p class="text-sm opacity-80 mb-4">Unlock full content, ad-free experience and exclusive stories</p>
+            <button class="bg-brand text-white text-[11px] font-bold uppercase tracking-widest px-6 py-2 hover:bg-accent transition-colors">Get Started</button>
+        </div>
+        <!-- Tag Cloud -->
+        <div>
+            <p class="widget-title">Tags</p>
+            <div class="mt-2">
+            <a href="#" class="tag-pill">Politics</a><a href="#" class="tag-pill">Travel</a><a href="#" class="tag-pill">Food</a>
+            <a href="#" class="tag-pill">Celebrity</a><a href="#" class="tag-pill">Make-Up</a><a href="#" class="tag-pill">Tech</a>
+            <a href="#" class="tag-pill">Finance</a><a href="#" class="tag-pill">Marketing</a><a href="#" class="tag-pill">Sports</a>
+            <a href="#" class="tag-pill">Health</a><a href="#" class="tag-pill">World</a>
+            </div>
+        </div>
+        </aside>
+    </div>
+
+    <hr class="border-gray-100 my-8">
+
+    <!-- ===== ROW 3: FINANCE + TECH (2-column) ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+        <div>
+            <!-- Finance -->
+            <div class="sec-header">
+                <span>Finance</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+                {% for article in finance_news %}
+                    <article class="cursor-pointer">
+                        {% if article.image %}
+                            <div class="img-zoom rounded-sm mb-3" style="height:170px">
+                                <img src="{{ article.image }}" alt="{{ article.title }}">
+                            </div>
+                        {% endif %}
+
+                        <p class="cat mb-1"> {{ article.source.title }} </p>
+
+                        <h3 class="serif font-bold text-[15px] leading-snug mb-1">
+                            <a href="{{ article.url }}" target="_blank" class="art-title">
+                                {{ article.title }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-500 text-[12px] line-clamp-2"> {{ article.body|default:"Read full article..."|truncatewords:15 }} </p>
+                        <p class="text-gray-400 text-[11px] mt-2"> {{ article.date }} </p>
+                    </article>
+                {% endfor %}
+            </div>
+
+        <!-- Tech -->
+        <div class="sec-header">
+            <span>Tech</span>
+        </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {% for article in tech_news %}
+                    <article class="cursor-pointer">
+                        {% if article.image %}
+                            <div class="img-zoom rounded-sm mb-3" style="height:170px">
+                                <img src="{{ article.image }}" alt="{{ article.title }}">
+                            </div>
+                        {% endif %}
+
+                        <p class="cat mb-1"> {{ article.source.title }} </p>
+
+                        <h3 class="serif font-bold text-[15px] leading-snug mb-1">
+                            <a href="{{ article.url }}" target="_blank"> {{ article.title }} </a>
+                        </h3>
+
+                        <p class="text-gray-500 text-[12px] line-clamp-2"> {{ article.body|default:"Read full article..."|truncatewords:15 }} </p>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right sidebar continued -->
+        <aside class="pt-0">
+            <!-- Social Follow -->
+            <div class="mb-8 border border-gray-200 rounded-sm overflow-hidden">
+                <p class="bg-gray-900 text-white text-center text-[11px] font-bold uppercase tracking-widest py-3">Follow Us</p>
+                <div class="grid grid-cols-2 gap-[1px] bg-gray-200">
+                    <div class="bg-[#3b5998] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+                        <p class="font-black text-xl">24K</p>
+                        <p class="text-[10px] uppercase tracking-widest opacity-80">Fans</p>
+                        <p class="text-[11px] font-semibold mt-1">Facebook</p>
+                    </div>
+                    <div class="bg-[#1da1f2] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+                        <p class="font-black text-xl">18K</p>
+                        <p class="text-[10px] uppercase tracking-widest opacity-80">Followers</p>
+                        <p class="text-[11px] font-semibold mt-1">Twitter</p>
+                    </div>
+                    <div class="bg-[#c13584] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+                        <p class="font-black text-xl">32K</p>
+                        <p class="text-[10px] uppercase tracking-widest opacity-80">Followers</p>
+                        <p class="text-[11px] font-semibold mt-1">Instagram</p>
+                    </div>
+                    <div class="bg-[#ff0000] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+                        <p class="font-black text-xl">9K</p>
+                        <p class="text-[10px] uppercase tracking-widest opacity-80">Subscribers</p>
+                        <p class="text-[11px] font-semibold mt-1">YouTube</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Must Read numbered list -->
+            <div class="mb-8">
+                <p class="widget-title">Must Read</p>
+                <div class="divide-y divide-gray-100">
+                    {% for article in must_read %}
+                        <article class="flex gap-3 py-3 cursor-pointer items-start">
+                            <span class="serif font-black text-3xl text-gray-200 leading-none w-8 shrink-0">
+                                {{ forloop.counter|stringformat:"02d" }}
+                            </span>
+
+                            <h4 class="serif font-bold text-[13px] leading-snug">
+                                <a href="{{ article.url }}" target="_blank" class="art-title">
+                                    {{ article.title|truncatewords:12 }}
+                                </a>
+                            </h4>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <hr class="border-gray-100 my-8">
+
+    <!-- ===== ROW 4: TRAVEL SECTION ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+        <div>
+        <div class="sec-header"><span>Travel</span></div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+    {% for article in travel_news %}
+
+    <article class="cursor-pointer">
+
+        {% if article.image %}
+        <div class="img-zoom rounded-sm mb-3" style="height:200px">
+            <img src="{{ article.image }}" alt="{{ article.title }}">
+        </div>
+        {% endif %}
+
+        <p class="cat mb-1">
+            {{ article.source.title }}
+        </p>
+
+        <h3 class="serif font-bold text-[16px] leading-snug mb-1">
+            <a href="{{ article.url }}" target="_blank" class="art-title">
+                {{ article.title }}
+            </a>
+        </h3>
+
+        <p class="text-gray-400 text-[11px]">
+            {{ article.date }}
+        </p>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+        </div>
+        <!-- Sidebar -->
+        <aside>
+        <div class="mb-8">
+            <p class="widget-title">Latest Travel Picks</p>
+<div class="divide-y divide-gray-100">
+
+    {% for article in travel_news|slice:":3" %}
+
+    <article class="flex gap-3 py-3 cursor-pointer">
+
+        <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
+            <img src="{{ article.image }}" alt="">
+        </div>
+
+        <div>
+            <p class="cat mb-[2px]">
+                {{ article.source.title }}
+            </p>
+
+            <h4 class="serif font-bold text-[13px] leading-snug">
+                <a href="{{ article.url }}" target="_blank">
+                    {{ article.title|truncatewords:8 }}
+                </a>
+            </h4>
+        </div>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+        </div>
+        <!-- Video widget -->
+        <div>
+            <p class="widget-title">Video</p>
+            <div class="relative img-zoom rounded-sm cursor-pointer mt-2" style="height:170px">
+            <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=400&q=80" alt="">
+            <div class="play-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#2d8c57"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.7),transparent);padding:12px 14px">
+                <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[1px] inline-block mb-1">Travel</span>
+                <p class="text-white serif font-bold text-[14px] leading-snug">Ultimate Travel Guide to Exploring Hidden Coastal Towns</p>
+            </div>
+            </div>
+        </div>
+        </aside>
+    </div>
+
+    <hr class="border-gray-100 my-8">
+
+    <!-- ===== ROW 5: CELEBRITIES + FOOD (2 columns) ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Celebrities -->
+        <div>
+        <div class="sec-header"><span>Celebrities</span></div>
+        <div class="grid grid-cols-2 gap-4">
+            <article class="cursor-pointer col-span-2">
+            <div class="overlay-card rounded-sm" style="height:220px">
+                <img src="https://images.unsplash.com/photo-1540304453527-62f979142a17?w=700&q=80" alt="">
+                <div class="overlay-content">
+                <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-1">Celebrity</span>
+                <h3 class="serif font-black text-white text-[20px] leading-snug">Kristen Stewart Visits the Toronto Film Festival with New Boyfriend</h3>
+                </div>
+            </div>
+            </article>
+            <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-2" style="height:130px">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&q=80" alt="">
+            </div>
+            <p class="cat mb-[2px]">Celebrity</p>
+            <h4 class="serif font-bold text-[13px] leading-snug"><span class="badge">Exclusive</span><a href="#" class="art-title">Watch Awesome Kate Halle Go Full Wiming Pro in the Bahamas</a></h4>
+            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-2" style="height:130px">
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&q=80" alt="">
+            </div>
+            <p class="cat mb-[2px]">Celebrity</p>
+            <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">Hollywood Stars Launch New Wellness Brand in Los Angeles</a></h4>
+            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
+                <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=160&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat mb-[2px]">Celebrity</p>
+                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">Singer Unveils Debut Album to Massive Critical Acclaim Worldwide</a></h4>
+            </div>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat mb-[2px]">Celebrity</p>
+                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">Reality Star Announces Surprise Wedding After 3-Month Romance</a></h4>
+            </div>
+            </article>
+        </div>
+        </div>
+
+        <!-- Food -->
+        <div>
+        <div class="sec-header"><span>Food</span></div>
+        <div class="grid grid-cols-2 gap-4">
+            <article class="cursor-pointer col-span-2">
+            <div class="overlay-card rounded-sm" style="height:220px">
+                <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=700&q=80" alt="">
+                <div class="overlay-content">
+                <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-1">Food</span>
+                <h3 class="serif font-black text-white text-[20px] leading-snug">Moroccan Salmon with Garlic Mayonnaise is Common in Southern Spain</h3>
+                </div>
+            </div>
+            </article>
+            <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-2" style="height:130px">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=80" alt="">
+            </div>
+            <p class="cat mb-[2px]">Food</p>
+            <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">This Week in Houston Food Blogs: High-Protein Recipes and Low Fat Shakes</a></h4>
+            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-2" style="height:130px">
+                <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300&q=80" alt="">
+            </div>
+            <p class="cat mb-[2px]">Food</p>
+            <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">Easy Food Survey: Pizza Voted As One of the Most Satisfying Meals</a></h4>
+            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
+                <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=160&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat mb-[2px]">Food</p>
+                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">Best Places to Get Your Mexican Food Fix When You Visit Mexico City</a></h4>
+            </div>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=160&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat mb-[2px]">Food</p>
+                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">The Best Pork Kebabs With Grilled Plums and Couscous Found in Poland</a></h4>
+            </div>
+            </article>
+        </div>
+        </div>
+    </div>
+
+    <hr class="border-gray-100 my-8">
+
+    <!-- ===== ROW 6: MAKE-UP FULL WIDTH ===== -->
+    <div>
+        <div class="sec-header"><span>Make-Up</span></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-3" style="height:170px">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80" alt="">
+            </div>
+            <p class="cat mb-1">Make-Up</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">10 Outfits Inspired by Famous Works of Art are Auctioned in London</a></h3>
+            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
+            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
+        </article>
+        <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-3" style="height:170px">
+            <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&q=80" alt="">
+            </div>
+            <p class="cat mb-1">Make-Up</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><span class="badge">Exclusive</span><a href="#" class="art-title">Top Beauty Influencers Share Their Morning Skincare Routines</a></h3>
+            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
+            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
+        </article>
+        <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-3" style="height:170px">
+            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80" alt="">
+            </div>
+            <p class="cat mb-1">Make-Up</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">2024 Makeup Trends That Will Dominate Runways This Season</a></h3>
+            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
+            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
+        </article>
+        <article class="cursor-pointer">
+            <div class="img-zoom rounded-sm mb-3" style="height:170px">
+            <img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&q=80" alt="">
+            </div>
+            <p class="cat mb-1">Make-Up</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">Foundation Finder: Which Formula Works Best for Your Skin Type</a></h3>
+            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
+            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
+        </article>
+        </div>
+    </div>
+
+    <hr class="border-gray-100 my-8">
+
+    <!-- ===== ROW 7: MARKETING SECTION + SIDEBAR ===== -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+        <div>
+        <div class="sec-header"><span>Marketing</span></div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <article class="cursor-pointer sm:col-span-1">
+            <div class="img-zoom rounded-sm mb-3" style="height:190px">
+                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&q=80" alt="">
+            </div>
+            <p class="cat-blue cat mb-1">Marketing</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">Customer Engagement Marketing: New Strategy for the Economy</a></h3>
+            <p class="text-gray-400 text-[11px]">Dave Walsh · Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer sm:col-span-1">
+            <div class="img-zoom rounded-sm mb-3" style="height:190px">
+                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&q=80" alt="">
+            </div>
+            <p class="cat-blue cat mb-1">Marketing</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">How Brands Are Winning With Content-First Social Media Strategies</a></h3>
+            <p class="text-gray-400 text-[11px]">Dave Walsh · Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer sm:col-span-1">
+            <div class="img-zoom rounded-sm mb-3" style="height:190px">
+                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80" alt="">
+            </div>
+            <p class="cat-blue cat mb-1">Marketing</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">Email Marketing Is Far From Dead — Here's the Proof in 2024</a></h3>
+            <p class="text-gray-400 text-[11px]">Dave Walsh · Nov 2, 2021</p>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
+                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=200&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat-blue cat mb-[2px]">Marketing</p>
+                <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">SEO Secrets That Will Double Your Website Traffic in 6 Months</a></h4>
+                <p class="text-gray-400 text-[11px] mt-1">Dave Walsh · Nov 2, 2021</p>
+            </div>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
+                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=200&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat-blue cat mb-[2px]">Marketing</p>
+                <h4 class="serif font-bold text-[13px] leading-snug"><span class="badge">Exclusive</span><a href="#" class="art-title">Influencer Marketing: The ROI Brands Are Actually Getting in 2024</a></h4>
+                <p class="text-gray-400 text-[11px] mt-1">Dave Walsh · Nov 2, 2021</p>
+            </div>
+            </article>
+            <article class="cursor-pointer flex gap-3">
+            <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200&q=80" alt="">
+            </div>
+            <div>
+                <p class="cat-blue cat mb-[2px]">Marketing</p>
+                <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">Video Content Will Drive 80% of All Internet Traffic by 2025</a></h4>
+                <p class="text-gray-400 text-[11px] mt-1">Dave Walsh · Nov 2, 2021</p>
+            </div>
+            </article>
+        </div>
+        </div>
+        <!-- sidebar -->
+        <aside>
+        <div class="mb-8">
+            <p class="widget-title">About Us</p>
+            <div class="text-gray-600 text-[13px] leading-relaxed">
+            <p>GenVoice Network is your trusted source for the latest news, celebrity gossip, food discoveries, travel guides and beauty inspiration from around the world.</p>
+            <p class="mt-3">Founded in 2021, we reach over 2 million readers monthly across 140 countries.</p>
+            <a href="#" class="inline-block mt-4 text-brand font-semibold text-[12px] uppercase tracking-widest border-b border-brand pb-[1px] hover:text-accent transition-colors">Read More →</a>
+            </div>
+        </div>
+        <!-- Newsletter widget -->
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-sm">
+            <p class="widget-title">Newsletter</p>
+            <p class="text-gray-500 text-[12px] mb-4 mt-1">Get the latest stories delivered to your inbox every morning.</p>
+            <input type="email" placeholder="Your email address" class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm mb-2">
+            <button class="w-full bg-brand text-white text-[11px] font-bold uppercase tracking-widest py-[10px] hover:bg-accent transition-colors rounded-sm">Subscribe Now</button>
+        </div>
+        </aside>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center gap-1 mt-10">
+        <a href="#" class="page-btn">«</a>
+        <a href="#" class="page-btn active">1</a>
+        <a href="#" class="page-btn">2</a>
+        <a href="#" class="page-btn">3</a>
+        <a href="#" class="page-btn">4</a>
+        <a href="#" class="page-btn">5</a>
+        <a href="#" class="page-btn">»</a>
+    </div>
+
+    </main>
+{% endblock %}

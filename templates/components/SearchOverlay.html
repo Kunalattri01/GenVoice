@@ -1,0 +1,217 @@
+<!-- Search Overlay -->
+<div id="search-overlay" class="search-overlay" onclick="closeSearch(event)">
+
+    <button class="search-close" onclick="closeSearchBtn()">
+        &times;
+    </button>
+
+    <div class="search-box">
+
+        <form method="GET" action="/search/">
+
+            <div class="search-input-wrapper">
+
+                <input
+                    id="search-input"
+                    type="text"
+                    name="q"
+                    placeholder="Search articles, topics, categories..."
+                    autocomplete="off"
+                >
+
+                <button type="submit">
+                    Search
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="search-tags">
+            <span>Trending:</span>
+
+            <a href="/search/?q=Politics">Politics</a>
+            <a href="/search/?q=Technology">Technology</a>
+            <a href="/search/?q=Business">Business</a>
+            <a href="/search/?q=Sports">Sports</a>
+            <a href="/search/?q=Travel">Travel</a>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+.search-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    backdrop-filter:blur(6px);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s ease;
+    z-index:9999999;
+}
+
+.search-overlay.active{
+    opacity:1;
+    visibility:visible;
+}
+
+.search-close{
+    position:absolute;
+    top:30px;
+    right:40px;
+
+    background:none;
+    border:none;
+
+    color:#fff;
+    font-size:42px;
+    cursor:pointer;
+}
+
+.search-box{
+    width:min(90%,800px);
+}
+
+.search-input-wrapper{
+    display:flex;
+    overflow:hidden;
+
+    border-radius:6px;
+    background:#fff;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.25);
+}
+
+.search-input-wrapper input{
+    flex:1;
+    border:none;
+    outline:none;
+
+    height:70px;
+    padding:0 25px;
+
+    font-size:18px;
+}
+
+.search-input-wrapper button{
+    width:150px;
+    border:none;
+
+    background:#2d8c57;
+    color:#fff;
+
+    font-weight:600;
+    cursor:pointer;
+}
+
+.search-input-wrapper button:hover{
+    background:#1e6040;
+}
+
+.search-tags{
+    margin-top:18px;
+    text-align:center;
+}
+
+.search-tags span{
+    color:#aaa;
+    margin-right:10px;
+}
+
+.search-tags a{
+    color:#fff;
+    text-decoration:none;
+    margin:0 8px;
+    font-size:14px;
+}
+
+.search-tags a:hover{
+    color:#2d8c57;
+}
+
+@media(max-width:768px){
+
+    .search-input-wrapper{
+        flex-direction:column;
+    }
+
+    .search-input-wrapper button{
+        width:100%;
+        height:55px;
+    }
+
+    .search-input-wrapper input{
+        height:60px;
+    }
+
+    .search-close{
+        top:15px;
+        right:20px;
+    }
+}
+</style>
+
+<script>
+function openSearch(){
+    document
+        .getElementById("search-overlay")
+        .classList.add("active");
+
+    setTimeout(()=>{
+        document.getElementById("search-input").focus();
+    },200);
+}
+
+function closeSearchBtn(){
+    document
+        .getElementById("search-overlay")
+        .classList.remove("active");
+}
+
+function closeSearch(e){
+    if(e.target.id === "search-overlay"){
+        closeSearchBtn();
+    }
+}
+
+document.addEventListener("keydown",(e)=>{
+    if(e.key === "Escape"){
+        closeSearchBtn();
+    }
+});
+</script>
+
+
+
+
+
+
+ 
+<!-- <div id="search-overlay" onclick="closeSearch(event)">
+    <button id="search-close" onclick="closeSearchBtn()">&times;</button>
+
+    <div id="search-box">
+        <form onsubmit="return false">
+            <input id="search-input" type="text" placeholder="Search here..." autocomplete="off"/>
+
+            <button type="submit" aria-label="Search">
+                <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </button>
+        </form>
+
+        <div class="search-suggest">
+            <p>Popular searches</p>
+            <a href="#">Politics</a><a href="#">Travel</a><a href="#">Food</a><a href="#">Celebrity</a><a href="#">Make-Up</a><a href="#">Finance</a><a href="#">Tech</a>
+        </div>
+    </div>
+</div> -->
