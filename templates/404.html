@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Article Not Found | Gen Voice News{% endblock %}
+{% block content %}
+<div class="error-404-page" style="max-width:640px;margin:80px auto;text-align:center;padding:0 20px;font-family:Georgia, serif;">
+  <h1 style="font-size:5rem;margin:0;color:#1a56db;">404</h1>
+  <h2 style="font-size:1.6rem;margin:10px 0 14px;">This article couldn't be found</h2>
+  <p style="color:#666;font-size:15px;line-height:1.6;">
+    The story you're looking for may have been removed, expired, or the link is incorrect.
+  </p>
+  <a href="{% url 'home' %}" style="display:inline-block;margin-top:24px;background:#1a56db;color:#fff;padding:10px 24px;border-radius:4px;text-decoration:none;font-weight:700;">
+    Back to Homepage
+  </a>
+</div>
+{% endblock %}

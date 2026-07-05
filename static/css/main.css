@@ -188,7 +188,7 @@ h1,h2,h3,h4,.serif{font-family:'Playfair Display',serif}
     border:none;
     cursor:pointer;
 
-    background:#2d8c57;
+    background:#3471eb;
     color:#fff;
 
     border-radius:0 10px 10px 0;
@@ -201,7 +201,7 @@ h1,h2,h3,h4,.serif{font-family:'Playfair Display',serif}
 }
 
 .social-handle:hover{
-    background:#1e6040;
+    background:#2563EB;
 }
 
 /* Existing Icon Styles */

@@ -1,0 +1,151 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}About Us | Gen Voice News{% endblock %}
+
+{% block bodyContent %}
+<main class="max-w-screen-2xl mx-auto px-4 py-6">
+
+  <!-- Breadcrumb -->
+  <nav class="text-[12px] text-gray-500 flex flex-wrap items-center gap-2 mb-5" aria-label="breadcrumb">
+    <a href="{% url 'HomePage' %}" class="text-brand hover:text-accent transition-colors">Home</a>
+    <span class="text-gray-300">›</span>
+    <span class="text-gray-400">About Us</span>
+  </nav>
+
+  <!-- Hero -->
+  <div class="overlay-card rounded-sm mb-10" style="height:280px">
+    <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1400&q=80" alt="Gen Voice News newsroom">
+    <div class="overlay-content">
+      <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">About Us</span>
+      <h1 class="serif font-black text-white text-[30px] md:text-[38px] leading-tight mb-2">Stories That Matter, Told Right</h1>
+      <p class="text-gray-200 text-[14px] max-w-xl">Gen Voice News is your trusted source for news, celebrity, food, travel and beauty coverage from around the world.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+
+    <!-- MAIN -->
+    <article>
+
+      <div class="sec-header"><span>Our Mission</span></div>
+      <p class="text-[15px] leading-[1.9] text-gray-700 mb-8">
+        Founded in 2021, Gen Voice News set out to build a newsroom that moves as fast as the internet
+        without losing sight of accuracy, context, and craft. We cover the stories our readers actually
+        care about — politics and finance alongside celebrity culture, food, travel and beauty — because
+        real life doesn't sort itself into a single category. Every article on this site is fact-checked,
+        clearly sourced, and written to respect your time.
+      </p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5 text-center">
+          <p class="serif font-black text-2xl text-brand">2M+</p>
+          <p class="text-[11px] uppercase tracking-widest text-gray-500 mt-1">Monthly Readers</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5 text-center">
+          <p class="serif font-black text-2xl text-brand">140+</p>
+          <p class="text-[11px] uppercase tracking-widest text-gray-500 mt-1">Countries Reached</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5 text-center">
+          <p class="serif font-black text-2xl text-brand">11</p>
+          <p class="text-[11px] uppercase tracking-widest text-gray-500 mt-1">Coverage Categories</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5 text-center">
+          <p class="serif font-black text-2xl text-brand">2021</p>
+          <p class="text-[11px] uppercase tracking-widest text-gray-500 mt-1">Founded</p>
+        </div>
+      </div>
+
+      <div class="sec-header"><span>What We Cover</span></div>
+      <div class="mt-2 mb-10">
+        <a href="#" class="tag-pill">Politics</a><a href="#" class="tag-pill">Finance</a><a href="#" class="tag-pill">Tech</a>
+        <a href="#" class="tag-pill">Travel</a><a href="#" class="tag-pill">Celebrity</a><a href="#" class="tag-pill">Food</a>
+        <a href="#" class="tag-pill">Make-Up</a><a href="#" class="tag-pill">Marketing</a><a href="#" class="tag-pill">World</a>
+      </div>
+
+      <div class="sec-header"><span>How We Work</span></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5">
+          <p class="serif font-bold text-[15px] mb-2">Sourced & Verified</p>
+          <p class="text-gray-500 text-[13px] leading-relaxed">Every story is pulled from vetted news sources and cross-referenced before it goes live.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5">
+          <p class="serif font-bold text-[15px] mb-2">Updated Continuously</p>
+          <p class="text-gray-500 text-[13px] leading-relaxed">Our homepage refreshes around the clock so you're never reading yesterday's news.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-sm p-5">
+          <p class="serif font-bold text-[15px] mb-2">Reader First</p>
+          <p class="text-gray-500 text-[13px] leading-relaxed">No paywalls on breaking news, clear labeling of sponsored content, and a fast, ad-light reading experience.</p>
+        </div>
+      </div>
+
+      <div class="sec-header"><span>Get In Touch</span></div>
+      <p class="text-[15px] leading-[1.9] text-gray-700 mb-2">
+        Have a tip, correction, or partnership inquiry? We'd love to hear from you.
+      </p>
+      <p class="text-[14px] text-gray-600">
+        Email us at <a href="mailto:hello@genvoicenetwork.com" class="text-brand font-semibold hover:text-accent transition-colors">hello@genvoicenetwork.com</a>
+      </p>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="bg-brand text-white rounded-sm p-5 mb-8">
+        <p class="text-[11px] font-bold uppercase tracking-widest opacity-80 mb-1">Newsletter</p>
+        <p class="text-[13px] opacity-90 mb-4">Get the best stories delivered to your inbox</p>
+        <form method="post" action="">
+          {% csrf_token %}
+          <input type="email" name="email" placeholder="Your email address" required
+                 class="w-full px-3 py-2 text-sm outline-none border-0 rounded-sm text-gray-900 mb-2">
+          <button type="submit" class="w-full bg-gray-900 text-white text-[11px] font-bold uppercase tracking-widest py-[10px] rounded-sm hover:bg-gray-700 transition-colors">Subscribe</button>
+        </form>
+      </div>
+
+      <div class="mb-8 border border-gray-200 rounded-sm overflow-hidden">
+        <p class="bg-gray-900 text-white text-center text-[11px] font-bold uppercase tracking-widest py-3">Follow Us</p>
+        <div class="grid grid-cols-2 gap-[1px] bg-gray-200">
+          <div class="bg-[#3b5998] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">24K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Fans</p>
+            <p class="text-[11px] font-semibold mt-1">Facebook</p>
+          </div>
+          <div class="bg-[#1da1f2] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">18K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Followers</p>
+            <p class="text-[11px] font-semibold mt-1">Twitter</p>
+          </div>
+          <div class="bg-[#c13584] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">32K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Followers</p>
+            <p class="text-[11px] font-semibold mt-1">Instagram</p>
+          </div>
+          <div class="bg-[#ff0000] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">9K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Subscribers</p>
+            <p class="text-[11px] font-semibold mt-1">YouTube</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <p class="widget-title">Company</p>
+        <div class="divide-y divide-gray-100 text-[13px]">
+          <a href="{% url 'AboutPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">About Us</a>
+          <a href="{% url 'PrivacyPolicyPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Privacy Policy</a>
+          <a href="{% url 'TermsConditionsPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Terms &amp; Conditions</a>
+        </div>
+      </div>
+
+      <div class="ad-banner">
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Advertisement</p>
+        <div class="bg-white/10 border border-dashed border-white/30 h-[250px] flex items-center justify-center text-white/60 text-[13px] rounded-sm">
+          300 × 250
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load custom_filters %}
 
 {% block bodyContent %}
     <!-- ===================== MAIN CONTENT ===================== -->
@@ -19,7 +20,7 @@
                     <p class="cat mb-1"> {{ article.source.title }} </p>
 
                     <h3 class="serif font-bold text-[17px] leading-snug mb-1">
-                        <a href="{{ article.url }}" target="_blank" class="art-title transition-colors"> {{ article.title }} </a>
+                        <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title transition-colors"> {{ article.title }} </a>
                     </h3>
 
                     <p class="text-gray-500 text-[13px] leading-relaxed line-clamp-2">
@@ -35,26 +36,30 @@
             <!-- Big hero -->
             {% if hero_main %}
                 <article class="overlay-card cursor-pointer rounded-sm" style="height:315px">
-                    <img src="{{ hero_main.image }}" alt="">
+                    <a href="{% url 'news_detail' hero_main.uri|encode_uri %}">
+                        <img src="{{ hero_main.image }}" alt="{{ hero_main.title }}">
 
-                    <div class="overlay-content">
-                        <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">{{ hero_main.source.title }}</span>
-                        <h2 class="serif font-black text-white text-[28px] leading-tight mb-2">{{ hero_main.title }}</h2>
-                        <p class="text-gray-300 text-[13px] line-clamp-2">{{ hero_main.body|truncatewords:25 }}</p>
-                    </div>
+                        <div class="overlay-content">
+                            <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">{{ hero_main.source.title }}</span>
+                            <h2 class="serif font-black text-white text-[28px] leading-tight mb-2">{{ hero_main.title }}</h2>
+                            <p class="text-gray-300 text-[13px] line-clamp-2">{{ hero_main.body|truncatewords:25 }}</p>
+                        </div>
+                    </a>
                 </article>
             {% endif %}
 
             <!-- Second hero -->
             {% if hero_second %}
             <article class="overlay-card cursor-pointer rounded-sm" style="height:280px">
-                <img src="{{ hero_second.image }}" alt="">
+                <a href="{% url 'news_detail' hero_second.uri|encode_uri %}">
+                    <img src="{{ hero_second.image }}" alt="{{ hero_second.title }}">
 
-                <div class="overlay-content">
-                    <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">{{ hero_second.source.title }}</span>
-                    <h2 class="serif font-black text-white text-[24px] leading-tight mb-2">{{ hero_second.title }}</h2>
-                    <p class="text-gray-300 text-[13px] line-clamp-2">{{ hero_second.body|truncatewords:20 }}</p>
-                </div>
+                    <div class="overlay-content">
+                        <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-2">{{ hero_second.source.title }}</span>
+                        <h2 class="serif font-black text-white text-[24px] leading-tight mb-2">{{ hero_second.title }}</h2>
+                        <p class="text-gray-300 text-[13px] line-clamp-2">{{ hero_second.body|truncatewords:20 }}</p>
+                    </div>
+                </a>
             </article>
             {% endif %}
         </div>
@@ -66,7 +71,7 @@
 
                     <div class="img-zoom rounded-sm shrink-0 w-[88px] h-[65px]">
 
-                        <img src="{{ article.image }}" alt="">
+                        <img src="{{ article.image }}" alt="{{ article.title }}">
 
                     </div>
 
@@ -74,7 +79,7 @@
                         <p class="cat mb-[2px]"> {{ article.source.title }} </p>
 
                         <h4 class="serif font-bold text-[13px] leading-snug">
-                            <a href="{{ article.url }}" target="_blank" class="art-title"> {{ article.title|truncatewords:8 }} </a>
+                            <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title"> {{ article.title|truncatewords:8 }} </a>
                         </h4>
 
                         <p class="text-gray-400 text-[11px] mt-1"> {{ article.date }} </p>
@@ -90,10 +95,11 @@
             <p class="text-[11px] font-bold uppercase tracking-widest opacity-80">Newsletter</p>
             <p class="serif font-bold text-lg">Get the best stories delivered to your inbox</p>
         </div>
-        <div class="flex gap-2 w-full sm:w-auto">
-            <input type="email" placeholder="Your email address" class="flex-1 sm:w-64 px-4 py-2 text-sm outline-none border-0 rounded-sm text-gray-900">
-            <button class="bg-gray-900 text-white text-[11px] font-bold uppercase tracking-widest px-5 py-2 rounded-sm hover:bg-gray-700 transition-colors whitespace-nowrap">Subscribe</button>
-        </div>
+        <form class="flex gap-2 w-full sm:w-auto" method="post" action="">
+            {% csrf_token %}
+            <input type="email" name="email" placeholder="Your email address" class="flex-1 sm:w-64 px-4 py-2 text-sm outline-none border-0 rounded-sm text-gray-900" required>
+            <button type="submit" class="bg-gray-900 text-white text-[11px] font-bold uppercase tracking-widest px-5 py-2 rounded-sm hover:bg-gray-700 transition-colors whitespace-nowrap">Subscribe</button>
+        </form>
     </div>
 
     <!-- ===== ROW 2: POLITICS SECTION + SIDEBAR ===== -->
@@ -119,7 +125,7 @@
                     </p>
 
                     <h3 class="serif font-bold text-[19px] leading-snug mb-2">
-                        <a href="{{ article.url }}" target="_blank" class="art-title">
+                        <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">
                             {{ article.title }}
                         </a>
                     </h3>
@@ -151,7 +157,7 @@
                         </p>
 
                         <h4 class="serif font-bold text-[14px] leading-snug">
-                            <a href="{{ article.url }}" target="_blank" class="art-title">
+                            <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">
                                 {{ article.title|truncatewords:12 }}
                             </a>
                         </h4>
@@ -177,14 +183,14 @@
                     {% for article in popular_posts %}
                         <article class="flex gap-3 py-3 cursor-pointer">
                             <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                                <img src="{{ article.image }}" alt="">
+                                <img src="{{ article.image }}" alt="{{ article.title }}">
                             </div>
 
                             <div>
                                 <p class="cat mb-[2px]"> {{ article.source.title }} </p>
 
                                 <h4 class="serif font-bold text-[13px] leading-snug">
-                                    <a href="{{ article.url }}" target="_blank" class="art-title"> {{ article.title|truncatewords:8 }} </a>
+                                    <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title"> {{ article.title|truncatewords:8 }} </a>
                                 </h4>
                             </div>
                         </article>
@@ -234,7 +240,7 @@
                         <p class="cat mb-1"> {{ article.source.title }} </p>
 
                         <h3 class="serif font-bold text-[15px] leading-snug mb-1">
-                            <a href="{{ article.url }}" target="_blank" class="art-title">
+                            <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">
                                 {{ article.title }}
                             </a>
                         </h3>
@@ -260,7 +266,7 @@
                         <p class="cat mb-1"> {{ article.source.title }} </p>
 
                         <h3 class="serif font-bold text-[15px] leading-snug mb-1">
-                            <a href="{{ article.url }}" target="_blank"> {{ article.title }} </a>
+                            <a href="{% url 'news_detail' article.uri|encode_uri %}"> {{ article.title }} </a>
                         </h3>
 
                         <p class="text-gray-500 text-[12px] line-clamp-2"> {{ article.body|default:"Read full article..."|truncatewords:15 }} </p>
@@ -309,7 +315,7 @@
                             </span>
 
                             <h4 class="serif font-bold text-[13px] leading-snug">
-                                <a href="{{ article.url }}" target="_blank" class="art-title">
+                                <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">
                                     {{ article.title|truncatewords:12 }}
                                 </a>
                             </h4>
@@ -343,7 +349,7 @@
         </p>
 
         <h3 class="serif font-bold text-[16px] leading-snug mb-1">
-            <a href="{{ article.url }}" target="_blank" class="art-title">
+            <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">
                 {{ article.title }}
             </a>
         </h3>
@@ -369,7 +375,7 @@
     <article class="flex gap-3 py-3 cursor-pointer">
 
         <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-            <img src="{{ article.image }}" alt="">
+            <img src="{{ article.image }}" alt="{{ article.title }}">
         </div>
 
         <div>
@@ -378,7 +384,7 @@
             </p>
 
             <h4 class="serif font-bold text-[13px] leading-snug">
-                <a href="{{ article.url }}" target="_blank">
+                <a href="{% url 'news_detail' article.uri|encode_uri %}">
                     {{ article.title|truncatewords:8 }}
                 </a>
             </h4>
@@ -415,49 +421,50 @@
         <div>
         <div class="sec-header"><span>Celebrities</span></div>
         <div class="grid grid-cols-2 gap-4">
+
+            {% with article=celebrities_news.0 %}
+            {% if article %}
             <article class="cursor-pointer col-span-2">
-            <div class="overlay-card rounded-sm" style="height:220px">
-                <img src="https://images.unsplash.com/photo-1540304453527-62f979142a17?w=700&q=80" alt="">
-                <div class="overlay-content">
-                <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-1">Celebrity</span>
-                <h3 class="serif font-black text-white text-[20px] leading-snug">Kristen Stewart Visits the Toronto Film Festival with New Boyfriend</h3>
+            <a href="{% url 'news_detail' article.uri|encode_uri %}">
+                <div class="overlay-card rounded-sm" style="height:220px">
+                    <img src="{{ article.image }}" alt="{{ article.title }}">
+                    <div class="overlay-content">
+                        <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-1">{{ article.source.title }}</span>
+                        <h3 class="serif font-black text-white text-[20px] leading-snug">{{ article.title }}</h3>
+                    </div>
                 </div>
-            </div>
+            </a>
             </article>
+            {% endif %}
+            {% endwith %}
+
+            {% for article in celebrities_news|slice:"1:3" %}
             <article class="cursor-pointer">
             <div class="img-zoom rounded-sm mb-2" style="height:130px">
-                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
-            <p class="cat mb-[2px]">Celebrity</p>
-            <h4 class="serif font-bold text-[13px] leading-snug"><span class="badge">Exclusive</span><a href="#" class="art-title">Watch Awesome Kate Halle Go Full Wiming Pro in the Bahamas</a></h4>
-            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
+            <p class="cat mb-[2px]">{{ article.source.title }}</p>
+            <h4 class="serif font-bold text-[13px] leading-snug">
+                <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title|truncatewords:12 }}</a>
+            </h4>
+            <p class="text-gray-400 text-[11px] mt-1">{{ article.date }}</p>
             </article>
-            <article class="cursor-pointer">
-            <div class="img-zoom rounded-sm mb-2" style="height:130px">
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&q=80" alt="">
-            </div>
-            <p class="cat mb-[2px]">Celebrity</p>
-            <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">Hollywood Stars Launch New Wellness Brand in Los Angeles</a></h4>
-            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
-            </article>
+            {% endfor %}
+
+            {% for article in celebrities_news|slice:"3:5" %}
             <article class="cursor-pointer flex gap-3">
             <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=160&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
             <div>
-                <p class="cat mb-[2px]">Celebrity</p>
-                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">Singer Unveils Debut Album to Massive Critical Acclaim Worldwide</a></h4>
+                <p class="cat mb-[2px]">{{ article.source.title }}</p>
+                <h4 class="serif font-bold text-[12px] leading-snug">
+                    <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title|truncatewords:10 }}</a>
+                </h4>
             </div>
             </article>
-            <article class="cursor-pointer flex gap-3">
-            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&q=80" alt="">
-            </div>
-            <div>
-                <p class="cat mb-[2px]">Celebrity</p>
-                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">Reality Star Announces Surprise Wedding After 3-Month Romance</a></h4>
-            </div>
-            </article>
+            {% endfor %}
+
         </div>
         </div>
 
@@ -465,49 +472,50 @@
         <div>
         <div class="sec-header"><span>Food</span></div>
         <div class="grid grid-cols-2 gap-4">
+
+            {% with article=food_news.0 %}
+            {% if article %}
             <article class="cursor-pointer col-span-2">
-            <div class="overlay-card rounded-sm" style="height:220px">
-                <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=700&q=80" alt="">
-                <div class="overlay-content">
-                <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-1">Food</span>
-                <h3 class="serif font-black text-white text-[20px] leading-snug">Moroccan Salmon with Garlic Mayonnaise is Common in Southern Spain</h3>
+            <a href="{% url 'news_detail' article.uri|encode_uri %}">
+                <div class="overlay-card rounded-sm" style="height:220px">
+                    <img src="{{ article.image }}" alt="{{ article.title }}">
+                    <div class="overlay-content">
+                        <span class="text-white text-[10px] font-bold uppercase tracking-widest border border-white/50 px-2 py-[2px] inline-block mb-1">{{ article.source.title }}</span>
+                        <h3 class="serif font-black text-white text-[20px] leading-snug">{{ article.title }}</h3>
+                    </div>
                 </div>
-            </div>
+            </a>
             </article>
+            {% endif %}
+            {% endwith %}
+
+            {% for article in food_news|slice:"1:3" %}
             <article class="cursor-pointer">
             <div class="img-zoom rounded-sm mb-2" style="height:130px">
-                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
-            <p class="cat mb-[2px]">Food</p>
-            <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">This Week in Houston Food Blogs: High-Protein Recipes and Low Fat Shakes</a></h4>
-            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
+            <p class="cat mb-[2px]">{{ article.source.title }}</p>
+            <h4 class="serif font-bold text-[13px] leading-snug">
+                <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title|truncatewords:12 }}</a>
+            </h4>
+            <p class="text-gray-400 text-[11px] mt-1">{{ article.date }}</p>
             </article>
-            <article class="cursor-pointer">
-            <div class="img-zoom rounded-sm mb-2" style="height:130px">
-                <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300&q=80" alt="">
-            </div>
-            <p class="cat mb-[2px]">Food</p>
-            <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">Easy Food Survey: Pizza Voted As One of the Most Satisfying Meals</a></h4>
-            <p class="text-gray-400 text-[11px] mt-1">Nov 2, 2021</p>
-            </article>
+            {% endfor %}
+
+            {% for article in food_news|slice:"3:5" %}
             <article class="cursor-pointer flex gap-3">
             <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=160&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
             <div>
-                <p class="cat mb-[2px]">Food</p>
-                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">Best Places to Get Your Mexican Food Fix When You Visit Mexico City</a></h4>
+                <p class="cat mb-[2px]">{{ article.source.title }}</p>
+                <h4 class="serif font-bold text-[12px] leading-snug">
+                    <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title|truncatewords:10 }}</a>
+                </h4>
             </div>
             </article>
-            <article class="cursor-pointer flex gap-3">
-            <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=160&q=80" alt="">
-            </div>
-            <div>
-                <p class="cat mb-[2px]">Food</p>
-                <h4 class="serif font-bold text-[12px] leading-snug"><a href="#" class="art-title">The Best Pork Kebabs With Grilled Plums and Couscous Found in Poland</a></h4>
-            </div>
-            </article>
+            {% endfor %}
+
         </div>
         </div>
     </div>
@@ -518,42 +526,21 @@
     <div>
         <div class="sec-header"><span>Make-Up</span></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {% for article in makeup_news|slice:":4" %}
         <article class="cursor-pointer">
             <div class="img-zoom rounded-sm mb-3" style="height:170px">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
-            <p class="cat mb-1">Make-Up</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">10 Outfits Inspired by Famous Works of Art are Auctioned in London</a></h3>
-            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
-            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
+            <p class="cat mb-1">{{ article.source.title }}</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1">
+                <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title }}</a>
+            </h3>
+            <p class="text-gray-500 text-[12px] line-clamp-2">{{ article.body|default:"Read full article..."|truncatewords:20 }}</p>
+            <p class="text-gray-400 text-[11px] mt-2">
+                {% if article.authors %}{{ article.authors.0.name }} · {% endif %}{{ article.date }}
+            </p>
         </article>
-        <article class="cursor-pointer">
-            <div class="img-zoom rounded-sm mb-3" style="height:170px">
-            <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&q=80" alt="">
-            </div>
-            <p class="cat mb-1">Make-Up</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><span class="badge">Exclusive</span><a href="#" class="art-title">Top Beauty Influencers Share Their Morning Skincare Routines</a></h3>
-            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
-            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
-        </article>
-        <article class="cursor-pointer">
-            <div class="img-zoom rounded-sm mb-3" style="height:170px">
-            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&q=80" alt="">
-            </div>
-            <p class="cat mb-1">Make-Up</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">2024 Makeup Trends That Will Dominate Runways This Season</a></h3>
-            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
-            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
-        </article>
-        <article class="cursor-pointer">
-            <div class="img-zoom rounded-sm mb-3" style="height:170px">
-            <img src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&q=80" alt="">
-            </div>
-            <p class="cat mb-1">Make-Up</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">Foundation Finder: Which Formula Works Best for Your Skin Type</a></h3>
-            <p class="text-gray-500 text-[12px] line-clamp-2">I actually first read this as alkalizing meaning effecting pH level, and I was like, OK I guess...</p>
-            <p class="text-gray-400 text-[11px] mt-2">Dave Walsh · Nov 2, 2021</p>
-        </article>
+        {% endfor %}
         </div>
     </div>
 
@@ -564,60 +551,35 @@
         <div>
         <div class="sec-header"><span>Marketing</span></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+            {% for article in marketing_news|slice:":3" %}
             <article class="cursor-pointer sm:col-span-1">
             <div class="img-zoom rounded-sm mb-3" style="height:190px">
-                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
-            <p class="cat-blue cat mb-1">Marketing</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">Customer Engagement Marketing: New Strategy for the Economy</a></h3>
-            <p class="text-gray-400 text-[11px]">Dave Walsh · Nov 2, 2021</p>
+            <p class="cat-blue cat mb-1">{{ article.source.title }}</p>
+            <h3 class="serif font-bold text-[15px] leading-snug mb-1">
+                <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title }}</a>
+            </h3>
+            <p class="text-gray-400 text-[11px]">{{ article.date }}</p>
             </article>
-            <article class="cursor-pointer sm:col-span-1">
-            <div class="img-zoom rounded-sm mb-3" style="height:190px">
-                <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&q=80" alt="">
-            </div>
-            <p class="cat-blue cat mb-1">Marketing</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">How Brands Are Winning With Content-First Social Media Strategies</a></h3>
-            <p class="text-gray-400 text-[11px]">Dave Walsh · Nov 2, 2021</p>
-            </article>
-            <article class="cursor-pointer sm:col-span-1">
-            <div class="img-zoom rounded-sm mb-3" style="height:190px">
-                <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80" alt="">
-            </div>
-            <p class="cat-blue cat mb-1">Marketing</p>
-            <h3 class="serif font-bold text-[15px] leading-snug mb-1"><a href="#" class="art-title">Email Marketing Is Far From Dead — Here's the Proof in 2024</a></h3>
-            <p class="text-gray-400 text-[11px]">Dave Walsh · Nov 2, 2021</p>
-            </article>
+            {% endfor %}
+
+            {% for article in marketing_news|slice:"3:6" %}
             <article class="cursor-pointer flex gap-3">
             <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
-                <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=200&q=80" alt="">
+                <img src="{{ article.image }}" alt="{{ article.title }}">
             </div>
             <div>
-                <p class="cat-blue cat mb-[2px]">Marketing</p>
-                <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">SEO Secrets That Will Double Your Website Traffic in 6 Months</a></h4>
-                <p class="text-gray-400 text-[11px] mt-1">Dave Walsh · Nov 2, 2021</p>
+                <p class="cat-blue cat mb-[2px]">{{ article.source.title }}</p>
+                <h4 class="serif font-bold text-[13px] leading-snug">
+                    <a href="{% url 'news_detail' article.uri|encode_uri %}" class="art-title">{{ article.title|truncatewords:14 }}</a>
+                </h4>
+                <p class="text-gray-400 text-[11px] mt-1">{{ article.date }}</p>
             </div>
             </article>
-            <article class="cursor-pointer flex gap-3">
-            <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
-                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=200&q=80" alt="">
-            </div>
-            <div>
-                <p class="cat-blue cat mb-[2px]">Marketing</p>
-                <h4 class="serif font-bold text-[13px] leading-snug"><span class="badge">Exclusive</span><a href="#" class="art-title">Influencer Marketing: The ROI Brands Are Actually Getting in 2024</a></h4>
-                <p class="text-gray-400 text-[11px] mt-1">Dave Walsh · Nov 2, 2021</p>
-            </div>
-            </article>
-            <article class="cursor-pointer flex gap-3">
-            <div class="img-zoom rounded-sm shrink-0 w-[100px] h-[72px]">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=200&q=80" alt="">
-            </div>
-            <div>
-                <p class="cat-blue cat mb-[2px]">Marketing</p>
-                <h4 class="serif font-bold text-[13px] leading-snug"><a href="#" class="art-title">Video Content Will Drive 80% of All Internet Traffic by 2025</a></h4>
-                <p class="text-gray-400 text-[11px] mt-1">Dave Walsh · Nov 2, 2021</p>
-            </div>
-            </article>
+            {% endfor %}
+
         </div>
         </div>
         <!-- sidebar -->
@@ -634,8 +596,11 @@
         <div class="bg-gray-50 border border-gray-200 p-5 rounded-sm">
             <p class="widget-title">Newsletter</p>
             <p class="text-gray-500 text-[12px] mb-4 mt-1">Get the latest stories delivered to your inbox every morning.</p>
-            <input type="email" placeholder="Your email address" class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm mb-2">
-            <button class="w-full bg-brand text-white text-[11px] font-bold uppercase tracking-widest py-[10px] hover:bg-accent transition-colors rounded-sm">Subscribe Now</button>
+            <form method="post" action="">
+                {% csrf_token %}
+                <input type="email" name="email" placeholder="Your email address" class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm mb-2" required>
+                <button type="submit" class="w-full bg-brand text-white text-[11px] font-bold uppercase tracking-widest py-[10px] hover:bg-accent transition-colors rounded-sm">Subscribe Now</button>
+            </form>
         </div>
         </aside>
     </div>

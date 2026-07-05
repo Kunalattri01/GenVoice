@@ -1,0 +1,302 @@
+{% extends "base/base.html" %} 
+{% load static %} 
+{% load custom_filters %} 
+
+{% block title %} 
+    {{ article.title }} | {{ source.title|default:"Gen Voice News" }} {% endblock %} 
+    
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/news_detail.css' %}" />
+{% endblock %} 
+
+
+{% block bodyContent %}
+<div class="detail-page">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="breadcrumb">
+        <a href="{% url 'HomePage' %}">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="{% url 'HomePage' %}#news">News</a>
+        {% if primary_category %}
+        <span class="breadcrumb-sep">›</span>
+        <span>{{ primary_category.label }}</span>
+        {% endif %}
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">{{ article.title|truncatechars:60 }}</span>
+    </nav>
+
+    <div class="detail-layout">
+        <!-- ============ MAIN COLUMN ============ -->
+        <main class="detail-main">
+            {% if primary_category %}
+                <span class="tag-pill">{{ primary_category.label }}</span>
+            {% endif %}
+
+            <h1 class="detail-title">{{ article.title }}</h1>
+
+            <div class="detail-meta">
+                <span class="meta-source"> {% if source.title %}<strong>{{ source.title }}</strong>{% endif %} </span>
+                <span class="meta-dot">•</span>
+                <span class="meta-date">{{ article.dateTimePub|date:"F j, Y — g:i A" }}</span>
+                {% if article.authors %}
+                <span class="meta-dot">•</span>
+                <span class="meta-author">
+                    By {% for a in article.authors %}{{ a.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </span>
+                {% endif %}
+                <span class="meta-dot">•</span>
+                <span class="meta-reading-time">{{ reading_time }} min read</span>
+            </div>
+
+            {% if article.image %}
+            <figure class="detail-featured-image">
+                <img src="{{ article.image }}" alt="{{ article.title }}" loading="eager" />
+            </figure>
+            {% endif %}
+
+            <!-- Social share -->
+            <div class="share-bar">
+                <span class="share-label">Share:</span>
+                <a
+                    class="share-btn share-fb"
+                    target="_blank"
+                    rel="noopener"
+                    href="https://www.facebook.com/sharer/sharer.php?u={{ current_url|urlencode }}"
+                    >Facebook</a
+                >
+                <a
+                    class="share-btn share-x"
+                    target="_blank"
+                    rel="noopener"
+                    href="https://twitter.com/intent/tweet?url={{ current_url|urlencode }}&text={{ article.title|urlencode }}"
+                    >X</a
+                >
+                <a
+                    class="share-btn share-linkedin"
+                    target="_blank"
+                    rel="noopener"
+                    href="https://www.linkedin.com/sharing/share-offsite/?url={{ current_url|urlencode }}"
+                    >LinkedIn</a
+                >
+                <a
+                    class="share-btn share-whatsapp"
+                    target="_blank"
+                    rel="noopener"
+                    href="https://api.whatsapp.com/send?text={{ article.title|urlencode }}%20{{ current_url|urlencode }}"
+                    >WhatsApp</a
+                >
+                <button
+                    class="share-btn share-copy"
+                    type="button"
+                    onclick="navigator.clipboard.writeText('{{ current_url }}'); this.textContent='Copied!'">
+                    Copy Link
+                </button>
+            </div>
+
+            <!-- Article body -->
+            <article class="detail-body">{{ article.body|linebreaks }}</article>
+
+            {% if article.url %}
+            <div class="source-link-box">
+                <span>Originally published on</span>
+                <a href="{{ article.url }}" target="_blank" rel="noopener nofollow">{{ source.title|default:article.url }}</a>
+            </div>
+            {% endif %}
+
+            <!-- Image gallery -->
+            {% if gallery|length > 1 %}
+            <section class="detail-gallery">
+                <h3 class="section-heading">Gallery</h3>
+                <div class="gallery-grid">
+                    {% for img in gallery %}
+                    <a href="{{ img }}" target="_blank" rel="noopener" class="gallery-item">
+                        <img src="{{ img }}" alt="{{ article.title }} — image {{ forloop.counter }}" loading="lazy" />
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Concepts / Keywords -->
+            {% if concepts %}
+            <section class="detail-keywords">
+                <h3 class="section-heading">Keywords &amp; Related Topics</h3>
+                <div class="chip-list">
+                    {% for c in concepts|slice:":15" %}
+                    <span class="chip">{{ c.label.eng }}</span>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Categories -->
+            {% if categories %}
+            <section class="detail-categories">
+                <h3 class="section-heading">Categories</h3>
+                <div class="chip-list">
+                    {% for cat in categories %}
+                    <span class="chip chip-outline">{{ cat.label }}</span>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Metadata table: everything else the API returned -->
+            <section class="detail-info-table">
+                <h3 class="section-heading">Article Information</h3>
+                <table class="info-table">
+                    <tbody>
+                        <tr>
+                            <th>Source Website</th>
+                            <td>{{ source.uri|default:"—" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Article URL</th>
+                            <td>
+                                <a href="{{ article.url }}" target="_blank" rel="noopener nofollow">{{ article.url|truncatechars:70 }}</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Language</th>
+                            <td>{{ article.lang|upper|default:"—" }}</td>
+                        </tr>
+                        {% if location.label %}
+                        <tr>
+                            <th>Location</th>
+                            <td>{{ location.label.eng|default:location.label }}</td>
+                        </tr>
+                        {% endif %} {% if sentiment != None %}
+                        <tr>
+                            <th>Sentiment</th>
+                            <td>
+                                <span class="sentiment-badge sentiment-{{ sentiment|sentiment_label|lower }}">
+                                    {{ sentiment|sentiment_label }} ({{ sentiment|floatformat:2 }})
+                                </span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Data Provider</th>
+                            <td>Event Registry</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Prev / Next -->
+            <nav class="prev-next-nav">
+                {% if prev_article %}
+                <a class="prev-next-card prev" href="{% url 'news_detail' prev_article.uri|encode_uri %}">
+                    <span class="prev-next-label">← Previous Article</span>
+                    <span class="prev-next-title">{{ prev_article.title|truncatechars:70 }}</span>
+                </a>
+                {% else %}
+                <span class="prev-next-card disabled"><span class="prev-next-label">← Previous Article</span></span>
+                {% endif %} {% if next_article %}
+                <a class="prev-next-card next" href="{% url 'news_detail' next_article.uri|encode_uri %}">
+                    <span class="prev-next-label">Next Article →</span>
+                    <span class="prev-next-title">{{ next_article.title|truncatechars:70 }}</span>
+                </a>
+                {% else %}
+                <span class="prev-next-card disabled"><span class="prev-next-label">Next Article →</span></span>
+                {% endif %}
+            </nav>
+
+            <!-- Related news cards -->
+            {% if related_articles %}
+            <section class="related-cards-section">
+                <h3 class="section-heading">Related News</h3>
+                <div class="related-cards-grid">
+                    {% for rel in related_articles %}
+                    <a class="related-card" href="{% url 'news_detail' rel.uri|encode_uri %}">
+                        {% if rel.image %}<img src="{{ rel.image }}" alt="{{ rel.title }}" loading="lazy" />{% endif %}
+                        <div class="related-card-body">
+                            <span class="related-card-source">{{ rel.source.title }}</span>
+                            <h4>{{ rel.title|truncatechars:80 }}</h4>
+                            <span class="related-card-date">{{ rel.dateTimePub|date:"Y-m-d" }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </main>
+
+        <!-- ============ SIDEBAR ============ -->
+        <aside class="detail-sidebar">
+            <div class="sidebar-box newsletter-box">
+                <h4>Newsletter</h4>
+                <p>Get the best stories delivered to your inbox</p>
+                <form class="newsletter-form" method="post" action="">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="Your email address" required />
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+
+            {% if latest_articles %}
+            <div class="sidebar-box">
+                <h4>Latest News</h4>
+                <ul class="sidebar-list">
+                    {% for item in latest_articles %}
+                    <li>
+                        <a href="{% url 'news_detail' item.uri|encode_uri %}">
+                            {% if item.image %}<img src="{{ item.image }}" alt="{{ item.title }}" loading="lazy" />{% endif %}
+                            <div>
+                                <span class="sidebar-item-source">{{ item.source.title }}</span>
+                                <p>{{ item.title|truncatechars:65 }}</p>
+                                <span class="sidebar-item-date">{{ item.dateTimePub|date:"Y-m-d" }}</span>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %} {% if trending_articles %}
+            <div class="sidebar-box">
+                <h4>Trending News</h4>
+                <ul class="sidebar-list numbered">
+                    {% for item in trending_articles %}
+                    <li>
+                        <span class="rank">{{ forloop.counter }}</span>
+                        <a href="{% url 'news_detail' item.uri|encode_uri %}">
+                            <p>{{ item.title|truncatechars:65 }}</p>
+                            <span class="sidebar-item-source">{{ item.source.title }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %} {% if related_articles %}
+            <div class="sidebar-box">
+                <h4>Related Articles</h4>
+                <ul class="sidebar-list">
+                    {% for item in related_articles|slice:":4" %}
+                    <li>
+                        <a href="{% url 'news_detail' item.uri|encode_uri %}">
+                            <p>{{ item.title|truncatechars:65 }}</p>
+                            <span class="sidebar-item-source">{{ item.source.title }}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="sidebar-box ad-placeholder">
+                <span class="ad-label">Advertisement</span>
+                <div class="ad-slot">300 × 250</div>
+            </div>
+
+            {% if popular_tags %}
+            <div class="sidebar-box">
+                <h4>Popular Tags</h4>
+                <div class="chip-list">
+                    {% for tag in popular_tags %} {% if tag %}<span class="chip chip-small">{{ tag }}</span>{% endif %} {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Privacy Policy | Gen Voice News{% endblock %}
+
+{% block bodyContent %}
+<main class="max-w-screen-2xl mx-auto px-4 py-6">
+
+  <!-- Breadcrumb -->
+  <nav class="text-[12px] text-gray-500 flex flex-wrap items-center gap-2 mb-5" aria-label="breadcrumb">
+    <a href="{% url 'HomePage' %}" class="text-brand hover:text-accent transition-colors">Home</a>
+    <span class="text-gray-300">›</span>
+    <span class="text-gray-400">Privacy Policy</span>
+  </nav>
+
+  <span class="inline-block bg-brand text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm mb-4">Legal</span>
+  <h1 class="serif font-black text-[28px] md:text-[36px] leading-tight mb-2">Privacy Policy</h1>
+  <p class="text-gray-500 text-[13px] mb-10 pb-6 border-b border-gray-200">Last updated: July 5, 2026</p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+
+    <!-- MAIN -->
+    <article class="text-[15px] leading-[1.9] text-gray-700 [&_p]:mb-5 [&_ul]:mb-5 [&_ul]:pl-5 [&_ul]:list-disc [&_ul_li]:mb-2">
+
+      <p>
+        Gen Voice News ("we," "us," or "our") operates genvoicenews.com (the "Site"). This Privacy
+        Policy explains what information we collect when you use the Site, how we use it, and the
+        choices available to you. By using the Site, you agree to the collection and use of
+        information described here.
+      </p>
+
+      <div id="information-we-collect" class="sec-header scroll-mt-24 mt-4"><span>1. Information We Collect</span></div>
+      <p>We collect the following categories of information:</p>
+      <ul>
+        <li><strong>Information you provide directly</strong> — such as your email address when you subscribe to our newsletter, or details you submit through a contact form.</li>
+        <li><strong>Automatically collected information</strong> — including your IP address, browser type, device type, pages visited, and time spent on the Site, gathered via cookies and similar technologies.</li>
+        <li><strong>Third-party data</strong> — aggregated, non-personally-identifiable analytics from services such as Google Analytics.</li>
+      </ul>
+
+      <div id="how-we-use" class="sec-header scroll-mt-24 mt-4"><span>2. How We Use Your Information</span></div>
+      <ul>
+        <li>To operate, maintain, and improve the Site and its content.</li>
+        <li>To send newsletters and updates to subscribers who have opted in.</li>
+        <li>To analyze usage trends and measure the effectiveness of our content and advertising.</li>
+        <li>To detect, prevent, and address technical issues, fraud, or abuse.</li>
+      </ul>
+
+      <div id="cookies" class="sec-header scroll-mt-24 mt-4"><span>3. Cookies &amp; Tracking Technologies</span></div>
+      <p>
+        We use cookies and similar tracking technologies to recognize your browser, remember your
+        preferences, and understand how visitors interact with the Site. You can instruct your browser
+        to refuse all cookies or to indicate when a cookie is being sent; however, some parts of the
+        Site may not function properly without them.
+      </p>
+
+      <div id="third-party" class="sec-header scroll-mt-24 mt-4"><span>4. Third-Party Services</span></div>
+      <p>
+        We source article content and metadata from third-party news aggregation services (including
+        Event Registry) and may embed third-party advertising, analytics, or social media widgets.
+        These third parties have their own privacy policies governing how they handle data, and we
+        encourage you to review them.
+      </p>
+
+      <div id="data-sharing" class="sec-header scroll-mt-24 mt-4"><span>5. Data Sharing &amp; Disclosure</span></div>
+      <p>
+        We do not sell your personal information. We may share information with service providers who
+        perform functions on our behalf (such as email delivery or hosting), or when required to do so
+        by law, or to protect the rights, property, or safety of Gen Voice News, our users, or others.
+      </p>
+
+      <div id="data-retention" class="sec-header scroll-mt-24 mt-4"><span>6. Data Retention</span></div>
+      <p>
+        We retain personal information only as long as necessary to fulfill the purposes described in
+        this policy, comply with legal obligations, resolve disputes, and enforce our agreements.
+      </p>
+
+      <div id="your-rights" class="sec-header scroll-mt-24 mt-4"><span>7. Your Rights &amp; Choices</span></div>
+      <ul>
+        <li>You may unsubscribe from our newsletter at any time using the link in any email we send.</li>
+        <li>Depending on your jurisdiction, you may have the right to access, correct, delete, or export the personal data we hold about you.</li>
+        <li>To exercise any of these rights, contact us using the details below.</li>
+      </ul>
+
+      <div id="childrens-privacy" class="sec-header scroll-mt-24 mt-4"><span>8. Children's Privacy</span></div>
+      <p>
+        The Site is not directed at children under 13, and we do not knowingly collect personal
+        information from children under 13. If you believe a child has provided us with personal
+        information, please contact us so we can remove it.
+      </p>
+
+      <div id="changes" class="sec-header scroll-mt-24 mt-4"><span>9. Changes to This Policy</span></div>
+      <p>
+        We may update this Privacy Policy from time to time. We will notify you of material changes by
+        posting the updated policy on this page with a revised "Last updated" date.
+      </p>
+
+      <div id="contact" class="sec-header scroll-mt-24 mt-4"><span>10. Contact Us</span></div>
+      <p>
+        If you have questions about this Privacy Policy, contact us at
+        <a href="mailto:privacy@genvoicenetwork.com" class="text-brand font-semibold hover:text-accent transition-colors">privacy@genvoicenetwork.com</a>.
+      </p>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="mb-8 lg:sticky lg:top-6">
+        <p class="widget-title">On This Page</p>
+        <div class="divide-y divide-gray-100 text-[13px]">
+          <a href="#information-we-collect" class="block py-2 text-gray-600 hover:text-brand transition-colors">1. Information We Collect</a>
+          <a href="#how-we-use" class="block py-2 text-gray-600 hover:text-brand transition-colors">2. How We Use It</a>
+          <a href="#cookies" class="block py-2 text-gray-600 hover:text-brand transition-colors">3. Cookies &amp; Tracking</a>
+          <a href="#third-party" class="block py-2 text-gray-600 hover:text-brand transition-colors">4. Third-Party Services</a>
+          <a href="#data-sharing" class="block py-2 text-gray-600 hover:text-brand transition-colors">5. Data Sharing</a>
+          <a href="#data-retention" class="block py-2 text-gray-600 hover:text-brand transition-colors">6. Data Retention</a>
+          <a href="#your-rights" class="block py-2 text-gray-600 hover:text-brand transition-colors">7. Your Rights</a>
+          <a href="#childrens-privacy" class="block py-2 text-gray-600 hover:text-brand transition-colors">8. Children's Privacy</a>
+          <a href="#changes" class="block py-2 text-gray-600 hover:text-brand transition-colors">9. Changes</a>
+          <a href="#contact" class="block py-2 text-gray-600 hover:text-brand transition-colors">10. Contact Us</a>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <p class="widget-title">Company</p>
+        <div class="divide-y divide-gray-100 text-[13px]">
+          <a href="{% url 'AboutPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">About Us</a>
+          <a href="{% url 'TermsConditionsPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Terms &amp; Conditions</a>
+        </div>
+      </div>
+
+      <div class="ad-banner">
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Advertisement</p>
+        <div class="bg-white/10 border border-dashed border-white/30 h-[250px] flex items-center justify-center text-white/60 text-[13px] rounded-sm">
+          300 × 250
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+{% endblock %}
