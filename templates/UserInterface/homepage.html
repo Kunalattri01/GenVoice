@@ -183,7 +183,7 @@
                     {% for article in popular_posts %}
                         <article class="flex gap-3 py-3 cursor-pointer">
                             <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                                <img src="{{ article.image }}" alt="{{ article.title }}">
+                                <img {% if article.image %} src="{{ article.image }}" {% endif %} alt="{{ article.title }}">
                             </div>
 
                             <div>
@@ -375,7 +375,7 @@
     <article class="flex gap-3 py-3 cursor-pointer">
 
         <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-            <img src="{{ article.image }}" alt="{{ article.title }}">
+            <img {% if article.image %}  src="{{ article.image }}" {% endif %} alt="{{ article.title }}">
         </div>
 
         <div>
@@ -454,7 +454,7 @@
             {% for article in celebrities_news|slice:"3:5" %}
             <article class="cursor-pointer flex gap-3">
             <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                <img src="{{ article.image }}" alt="{{ article.title }}">
+                <img {% if article.image %} src="{{ article.image }}" {% endif %} alt="{{ article.title }}">
             </div>
             <div>
                 <p class="cat mb-[2px]">{{ article.source.title }}</p>
@@ -505,7 +505,7 @@
             {% for article in food_news|slice:"3:5" %}
             <article class="cursor-pointer flex gap-3">
             <div class="img-zoom rounded-sm shrink-0 w-[80px] h-[60px]">
-                <img src="{{ article.image }}" alt="{{ article.title }}">
+                <img {% if article.image %} src="{{ article.image }}" {% endif %} alt="{{ article.title }}">
             </div>
             <div>
                 <p class="cat mb-[2px]">{{ article.source.title }}</p>
