@@ -71,7 +71,7 @@
 
                     <div class="img-zoom rounded-sm shrink-0 w-[88px] h-[65px]">
 
-                        <img src="{{ article.image }}" alt="{{ article.title }}">
+                        <img {% if article.image %} src="{{ article.image }}" {% endif %} alt="{{ article.title }}">
 
                     </div>
 
