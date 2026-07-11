@@ -1,0 +1,146 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Contact Us | Gen Voice News{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="Get in touch with the Gen Voice News team — tips, corrections, partnerships, or general questions.">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block bodyContent %}
+<main class="max-w-screen-2xl mx-auto px-4 py-6">
+
+  <!-- Breadcrumb -->
+  <nav class="text-[12px] text-gray-500 flex flex-wrap items-center gap-2 mb-5" aria-label="breadcrumb">
+    <a href="{% url 'HomePage' %}" class="text-brand hover:text-accent transition-colors">Home</a>
+    <span class="text-gray-300">›</span>
+    <span class="text-gray-400">Contact Us</span>
+  </nav>
+
+  <span class="inline-block bg-brand text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm mb-4">Get In Touch</span>
+  <h1 class="serif font-black text-[28px] md:text-[36px] leading-tight mb-2">Contact Us</h1>
+  <p class="text-gray-500 text-[14px] mb-10 pb-6 border-b border-gray-200 max-w-2xl">
+    Have a news tip, correction, partnership inquiry, or just want to say hi? Fill out the form
+    below and our team will get back to you within 1–2 business days.
+  </p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+
+    <!-- MAIN -->
+    <article>
+
+      <!-- Django messages -->
+      {% if messages %}
+        <div class="mb-6 flex flex-col gap-2">
+          {% for message in messages %}
+            <div class="text-[13px] px-4 py-3 rounded-sm border
+              {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-700
+              {% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-700
+              {% else %}bg-gray-50 border-gray-200 text-gray-600{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'ContactPage' %}" class="bg-gray-50 border border-gray-200 rounded-sm p-6 relative">
+        {% csrf_token %}
+
+        <!-- Honeypot — hidden from real users, catches simple bots -->
+        <div class="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+          <label for="company_website">Company Website</label>
+          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+          <div>
+            <label for="name" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Your Name</label>
+            <input type="text" id="name" name="name" required value="{{ form_data.name|default:'' }}"
+                   class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+          </div>
+          <div>
+            <label for="email" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Your Email</label>
+            <input type="email" id="email" name="email" required value="{{ form_data.email|default:'' }}"
+                   class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <label for="subject" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Subject</label>
+          <input type="text" id="subject" name="subject" required value="{{ form_data.subject|default:'' }}"
+                 class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+        </div>
+
+        <div class="mb-6">
+          <label for="message" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Message</label>
+          <textarea id="message" name="message" rows="7" required maxlength="5000"
+                    class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm resize-y">{{ form_data.message|default:'' }}</textarea>
+        </div>
+
+        <button type="submit"
+                class="bg-brand text-white text-[11px] font-bold uppercase tracking-widest px-8 py-3 rounded-sm hover:bg-accent transition-colors">
+          Send Message
+        </button>
+      </form>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="mb-8 border border-gray-200 rounded-sm p-5">
+        <p class="widget-title">Reach Us Directly</p>
+        <ul class="text-[13px] text-gray-600 space-y-2 mt-2">
+          <li><strong class="text-gray-800">General:</strong> <a href="mailto:hello@genvoicenews.com" class="text-brand hover:text-accent transition-colors">hello@genvoicenews.com</a></li>
+          <li><strong class="text-gray-800">Editorial:</strong> <a href="mailto:editorial@genvoicenews.com" class="text-brand hover:text-accent transition-colors">editorial@genvoicenews.com</a></li>
+          <li><strong class="text-gray-800">Response time:</strong> 1–2 business days</li>
+        </ul>
+      </div>
+
+      <div class="mb-8 border border-gray-200 rounded-sm overflow-hidden">
+        <p class="bg-gray-900 text-white text-center text-[11px] font-bold uppercase tracking-widest py-3">Follow Us</p>
+        <div class="grid grid-cols-2 gap-[1px] bg-gray-200">
+          <div class="bg-[#3b5998] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">24K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Fans</p>
+            <p class="text-[11px] font-semibold mt-1">Facebook</p>
+          </div>
+          <div class="bg-[#1da1f2] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">18K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Followers</p>
+            <p class="text-[11px] font-semibold mt-1">Twitter</p>
+          </div>
+          <div class="bg-[#c13584] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">32K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Followers</p>
+            <p class="text-[11px] font-semibold mt-1">Instagram</p>
+          </div>
+          <div class="bg-[#ff0000] py-4 text-center text-white cursor-pointer hover:opacity-90 transition-opacity">
+            <p class="font-black text-xl">9K</p>
+            <p class="text-[10px] uppercase tracking-widest opacity-80">Subscribers</p>
+            <p class="text-[11px] font-semibold mt-1">YouTube</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <p class="widget-title">Company</p>
+        <div class="divide-y divide-gray-100 text-[13px]">
+          <a href="{% url 'ContactPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">About Us</a>
+          <a href="{% url 'WriteForUsPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Write For Us</a>
+          <a href="{% url 'PrivacyPolicyPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Privacy Policy</a>
+          <a href="{% url 'TermsConditionsPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Terms &amp; Conditions</a>
+        </div>
+      </div>
+
+      <div class="ad-banner">
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Advertisement</p>
+        <div class="bg-white/10 border border-dashed border-white/30 h-[250px] flex items-center justify-center text-white/60 text-[13px] rounded-sm">
+          300 × 250
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+{% endblock %}

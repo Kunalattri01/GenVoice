@@ -33,9 +33,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,6 +55,22 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+DEFAULT_FROM_EMAIL = "info@genvoicenetwork.com"
+CONTACT_RECIPIENT_EMAIL = "info@genvoicenetwork.com"
+WRITER_SUBMISSIONS_EMAIL = "info@genvoicenetwork.com"
+
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = "smtpout.secureserver.net"
+EMAIL_HOST_USER = "info@genvoicenetwork.com"
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", 'RamEmpire@9999')
+
+# ---- OPTION A: Port 465 (SSL) — GoDaddy's recommended port ----
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False   # must be False when using SSL/465
+
 
 ROOT_URLCONF = 'MAIN.urls'
 
@@ -136,4 +150,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-EVENT_REGISTRY_API_KEY = '6c8b7431-3a3b-4b49-98ae-59a0501386f9'
+EVENT_REGISTRY_API_KEY = '413ad0d5-089a-48cb-85fa-2297d50769d5' # Live
+
+# EVENT_REGISTRY_API_KEY = 'a8dd4f60-189d-4dbe-ae24-138106893eaa' # Development

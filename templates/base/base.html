@@ -19,18 +19,18 @@
     {% endblock %}
 </head>
 <body>
-    {% include 'components/Loader.html' %}
+    <!-- {% include 'components/Loader.html' %} -->
 
     {% include 'components/SocialBar.html' %}
     {% include 'components/SearchOverlay.html' %}
     {% include 'components/Navbar.html' %}
     {% include 'components/NewsTicker.html' %}
-
     
-    {% block bodyContent %}  {% endblock %}
+    {% block bodyContent %}
+    {% endblock %}
 
-    
     {% include 'components/Footer.html' %}
+    
     <script src="{% static 'js/loader.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
 </body>

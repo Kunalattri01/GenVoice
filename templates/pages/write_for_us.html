@@ -1,0 +1,158 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %} Write For Us | Gen Voice News{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="Pitch a story to Gen Voice News. Submit your idea, category, and a writing sample and our editorial team will get back to you.">
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% endblock %}
+
+{% block bodyContent %}
+<main class="max-w-screen-2xl mx-auto px-4 py-6">
+
+  <!-- Breadcrumb -->
+  <nav class="text-[12px] text-gray-500 flex flex-wrap items-center gap-2 mb-5" aria-label="breadcrumb">
+    <a href="{% url 'HomePage' %}" class="text-brand hover:text-accent transition-colors">Home</a>
+    <span class="text-gray-300">›</span>
+    <span class="text-gray-400">Write For Us</span>
+  </nav>
+
+  <span class="inline-block bg-brand text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm mb-4">Join Our Contributors</span>
+  <h1 class="serif font-black text-[28px] md:text-[36px] leading-tight mb-2">Write For Us</h1>
+  <p class="text-gray-500 text-[14px] mb-10 pb-6 border-b border-gray-200 max-w-2xl">
+    We're always looking for sharp voices across politics, finance, tech, travel, celebrity,
+    food, beauty, and marketing. Pitch us your idea below — our editorial team reviews every
+    submission within 5–7 business days.
+  </p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+
+    <!-- MAIN -->
+    <article>
+
+      <!-- Django messages -->
+      {% if messages %}
+        <div class="mb-6 flex flex-col gap-2">
+          {% for message in messages %}
+            <div class="text-[13px] px-4 py-3 rounded-sm border
+              {% if message.tags == 'success' %}bg-green-50 border-green-200 text-green-700
+              {% elif message.tags == 'error' %}bg-red-50 border-red-200 text-red-700
+              {% else %}bg-gray-50 border-gray-200 text-gray-600{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'WriteForUsPage' %}" enctype="multipart/form-data"
+            class="bg-gray-50 border border-gray-200 rounded-sm p-6 relative">
+        {% csrf_token %}
+
+        <!-- Honeypot -->
+        <div class="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+          <div>
+            <label for="full_name" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Full Name</label>
+            <input type="text" id="full_name" name="full_name" required value="{{ form_data.full_name|default:'' }}"
+                   class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+          </div>
+          <div>
+            <label for="email" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Email Address</label>
+            <input type="email" id="email" name="email" required value="{{ form_data.email|default:'' }}"
+                   class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+          <div>
+            <label for="category" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Category</label>
+            <select id="category" name="category" required
+                    class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm bg-white">
+              <option value="" {% if not form_data.category %}selected{% endif %} disabled>Select a category</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}" {% if form_data.category == cat %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="portfolio_url" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Portfolio / Samples Link <span class="normal-case text-gray-400 font-normal">(optional)</span></label>
+            <input type="url" id="portfolio_url" name="portfolio_url" value="{{ form_data.portfolio_url|default:'' }}"
+                   placeholder="https://..."
+                   class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <label for="article_title" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Proposed Article Title</label>
+          <input type="text" id="article_title" name="article_title" required value="{{ form_data.article_title|default:'' }}"
+                 class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm">
+        </div>
+
+        <div class="mb-5">
+          <label for="pitch" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Your Pitch</label>
+          <textarea id="pitch" name="pitch" rows="7" required maxlength="5000"
+                    placeholder="Tell us about your idea, angle, and why our readers would care..."
+                    class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm resize-y">{{ form_data.pitch|default:'' }}</textarea>
+        </div>
+
+        <div class="mb-6">
+          <label for="writing_sample" class="block text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-2">Writing Sample <span class="normal-case text-gray-400 font-normal">(optional, PDF/DOC/DOCX/TXT, max 5MB)</span></label>
+          <input type="file" id="writing_sample" name="writing_sample" accept=".pdf,.doc,.docx,.txt"
+                 class="w-full border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand rounded-sm bg-white file:mr-3 file:py-1 file:px-3 file:rounded-sm file:border-0 file:bg-brand file:text-white file:text-[11px] file:font-bold file:uppercase file:tracking-widest">
+        </div>
+
+        <button type="submit"
+                class="bg-brand text-white text-[11px] font-bold uppercase tracking-widest px-8 py-3 rounded-sm hover:bg-accent transition-colors">
+          Submit Pitch
+        </button>
+      </form>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="mb-8 border border-gray-200 rounded-sm p-5">
+        <p class="widget-title">Contributor Guidelines</p>
+        <ul class="text-[13px] text-gray-600 space-y-2 mt-2 list-disc pl-4">
+          <li>Original, unpublished work only.</li>
+          <li>800–1,500 words for standard features.</li>
+          <li>Cite sources and quotes clearly.</li>
+          <li>We'll follow up within 5–7 business days.</li>
+        </ul>
+      </div>
+
+      <div class="mb-8">
+        <p class="widget-title">Categories We Cover</p>
+        <div class="mt-2">
+          {% for cat in categories %}
+            <span class="tag-pill">{{ cat }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="mb-8">
+        <p class="widget-title">Company</p>
+        <div class="divide-y divide-gray-100 text-[13px]">
+          <a href="{% url 'AboutPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">About Us</a>
+          <a href="{% url 'AboutPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Contact Us</a>
+          <a href="{% url 'PrivacyPolicyPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Privacy Policy</a>
+          <a href="{% url 'TermsConditionsPage' %}" class="block py-2 text-gray-600 hover:text-brand transition-colors">Terms &amp; Conditions</a>
+        </div>
+      </div>
+
+      <div class="ad-banner">
+        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Advertisement</p>
+        <div class="bg-white/10 border border-dashed border-white/30 h-[250px] flex items-center justify-center text-white/60 text-[13px] rounded-sm">
+          300 × 250
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+{% endblock %}

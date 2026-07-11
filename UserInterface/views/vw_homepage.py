@@ -21,7 +21,9 @@ class HomePageView(View):
             },
             "resultType": "articles",
             "articlesCount": 60,
-            "apiKey": "6c8b7431-3a3b-4b49-98ae-59a0501386f9"
+            "apiKey": "413ad0d5-089a-48cb-85fa-2297d50769d5", # Live
+            
+            # "apiKey": "a8dd4f60-189d-4dbe-ae24-138106893eaa", # Development
         }
 
         news_data = []
