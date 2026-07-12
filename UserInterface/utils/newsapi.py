@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "413ad0d5-089a-48cb-85fa-2297d50769d5" # Live
+API_KEY = "f60e6a27-5803-4d57-a930-a387bcf5eb3d" # Live
 
 # API_KEY = "a8dd4f60-189d-4dbe-ae24-138106893eaa" # Development
 

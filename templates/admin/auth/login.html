@@ -1,0 +1,155 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | GenVoice Portal</title>
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link rel="stylesheet" href="{% static 'css/output.css' %}"> -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    colors: {
+                        primary: "#0A1E5E",
+                        accent: "#2563EB",
+                        success: "#22C55E",
+                        warning: "#F59E0B",
+                        danger: "#EF4444",
+                        bgpage: "#F8FAFC",
+                        bordercolor: "#E5E7EB",
+                        textprimary: "#111827",
+                        textsecondary: "#6B7280",
+                    },
+                    borderRadius: {
+                        xl: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-bgpage min-h-screen flex items-center justify-center px-4 py-10">
+    <main class="w-full max-w-[420px]">
+        <!-- Card -->
+        <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-8 sm:p-10">
+            <!-- Logo Placeholder -->
+            <div class="flex justify-center mb-6">
+                <div class="w-14 h-14 rounded-xl bg-primary flex items-center justify-center">
+                    <i class="fa-solid fa-newspaper text-white text-2xl"></i>
+                </div>
+            </div>
+
+            <!-- Heading -->
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-semibold text-textprimary">Welcome back</h1>
+                <p class="text-sm text-textsecondary mt-2">Sign in to manage your news portal</p>
+            </div>
+
+            <!-- Form -->
+            <form class="space-y-5" novalidate>
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-textprimary mb-1.5"> Email address </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-regular fa-envelope text-sm"></i>
+                        </span>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            autocomplete="email"
+                            placeholder="you@newsportal.com"
+                            class="w-full h-12 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="password" class="block text-sm font-medium text-textprimary"> Password </label>
+                        <a href="#" class="text-sm font-medium text-accent hover:text-primary transition"> Forgot password? </a>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </span>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="Enter your password"
+                            class="w-full h-12 pl-10 pr-11 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        <button
+                            type="button"
+                            id="togglePassword"
+                            aria-label="Show password"
+                            aria-pressed="false"
+                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary hover:text-textprimary transition">
+                            <i class="fa-regular fa-eye text-sm" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="remember"
+                        name="remember"
+                        class="h-4 w-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                    <label for="remember" class="ml-2 text-sm text-textsecondary cursor-pointer select-none">
+                        Remember me for 30 days
+                    </label>
+                </div>
+
+                <!-- Login Button -->
+                <button
+                    type="submit"
+                    class="w-full h-12 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket text-sm"></i>
+                    Log in
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-6">
+            <p class="text-sm text-textsecondary">&copy; 2026 GenVoice News Portal. All rights reserved.</p>
+        </footer>
+    </main>
+
+    <script>
+        const toggleBtn = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("password");
+        const toggleIcon = document.getElementById("toggleIcon");
+
+        toggleBtn.addEventListener("click", () => {
+            const isPassword = passwordInput.type === "password";
+            passwordInput.type = isPassword ? "text" : "password";
+            toggleIcon.classList.toggle("fa-eye");
+            toggleIcon.classList.toggle("fa-eye-slash");
+            toggleBtn.setAttribute("aria-pressed", String(isPassword));
+            toggleBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+        });
+    </script>
+</body>
+</html>

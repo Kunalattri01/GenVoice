@@ -30,13 +30,13 @@ class NewsDetailView(View):
     template_name = "UserInterface/news_detail.html"
 
     def get(self, request, encoded_uri, *args, **kwargs):
-        print("Encoded URI:", encoded_uri)
+        # print("Encoded URI:", encoded_uri)
 
         article_uri = unquote(encoded_uri)
-        print("Decoded URI:", article_uri)
+        # print("Decoded URI:", article_uri)
 
         article = fetch_article_by_uri(article_uri)
-        print("Article:", article)
+        # print("Article:", article)
 
         if not article:
             raise Http404("This article could not be found or is no longer available.")

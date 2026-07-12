@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'UserInterface',
     'pages',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -150,6 +151,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-EVENT_REGISTRY_API_KEY = '413ad0d5-089a-48cb-85fa-2297d50769d5' # Live
+EVENT_REGISTRY_API_KEY = 'f60e6a27-5803-4d57-a930-a387bcf5eb3d' # Live
 
 # EVENT_REGISTRY_API_KEY = 'a8dd4f60-189d-4dbe-ae24-138106893eaa' # Development

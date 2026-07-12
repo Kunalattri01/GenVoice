@@ -21,8 +21,8 @@ class HomePageView(View):
             },
             "resultType": "articles",
             "articlesCount": 60,
-            "apiKey": "413ad0d5-089a-48cb-85fa-2297d50769d5", # Live
-            
+            "apiKey": "f60e6a27-5803-4d57-a930-a387bcf5eb3d", # Live
+
             # "apiKey": "a8dd4f60-189d-4dbe-ae24-138106893eaa", # Development
         }
 
@@ -38,7 +38,7 @@ class HomePageView(View):
 
                 news_data = data.get("articles", {}).get("results", [])
 
-                print("Total Articles:", len(news_data))
+                # print("Total Articles:", len(news_data))
 
         except Exception as e:
             print("ERROR:", e)
