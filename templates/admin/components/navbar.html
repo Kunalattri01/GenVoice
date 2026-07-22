@@ -1,0 +1,128 @@
+{% load static %}
+<header class="sticky top-0 z-20 h-16 bg-white border-b border-bordercolor flex items-center gap-3 px-4 sm:px-6">
+
+    <!-- Sidebar toggle (mobile) -->
+    <button id="sidebarToggle" aria-label="Toggle sidebar" class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" >
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Search -->
+    <div class="relative flex-1 max-w-md">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+        </span>
+        <input type="text" placeholder="Search articles, users, tags..." class="w-full h-10 pl-10 pr-4 rounded-xl border border-bordercolor bg-bgpage text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent focus:bg-white transition" >
+    </div>
+
+    <div class="flex-1"></div>
+
+    <!-- Right icons -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+
+        <!-- Notifications -->
+        <div class="relative">
+
+            <button id="notifBtn" aria-label="Notifications" class="relative w-10 h-10 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition">
+                <i class="fa-regular fa-bell text-[17px]"></i>
+                <span class="absolute top-2 right-2.5 w-1.5 h-1.5 rounded-full bg-danger"></span>
+            </button>
+
+            <div id="notifDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+                <div class="px-4 py-3 border-b border-bordercolor flex items-center justify-between">
+                    <span class="text-sm font-semibold text-textprimary">Notifications</span>
+                    <span class="text-[11px] font-semibold bg-danger/10 text-danger px-2 py-0.5 rounded-full">9 new</span>
+                </div>
+
+                <ul class="max-h-72 overflow-y-auto">
+                    <li class="px-4 py-3 border-b border-bordercolor hover:bg-bgpage transition">
+                        <p class="text-sm text-textprimary">New comment awaiting moderation</p>
+                        <p class="text-xs text-textsecondary mt-0.5">2 minutes ago</p>
+                    </li>
+                    <li class="px-4 py-3 border-b border-bordercolor hover:bg-bgpage transition">
+                        <p class="text-sm text-textprimary">Article "Market Update" published</p>
+                        <p class="text-xs text-textsecondary mt-0.5">1 hour ago</p>
+                    </li>
+                    <li class="px-4 py-3 hover:bg-bgpage transition">
+                        <p class="text-sm text-textprimary">API import completed successfully</p>
+                        <p class="text-xs text-textsecondary mt-0.5">3 hours ago</p>
+                    </li>
+                </ul>
+
+                <a href="{% url 'NotificationPage' %}" class="block text-center text-sm font-medium text-accent hover:text-primary py-2.5 border-t border-bordercolor transition"> View all notifications </a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="relative">
+            <button id="msgBtn" aria-label="Messages" class="relative w-10 h-10 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" >
+                <i class="fa-regular fa-envelope text-[17px]"></i>
+                <span class="absolute top-2 right-2.5 w-1.5 h-1.5 rounded-full bg-accent"></span>
+            </button>
+
+            <div id="msgDropdown" class="hidden absolute right-0 mt-2 w-80 bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+
+                <div class="px-4 py-3 border-b border-bordercolor">
+                    <span class="text-sm font-semibold text-textprimary">Messages</span>
+                </div>
+
+                <ul class="max-h-72 overflow-y-auto">
+                    <li class="px-4 py-3 border-b border-bordercolor hover:bg-bgpage transition flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0">SA</div>
+                        <div class="min-w-0">
+                            <p class="text-sm text-textprimary font-medium truncate">Sara Ahmed</p>
+                            <p class="text-xs text-textsecondary truncate">Can you review the draft?</p>
+                        </div>
+                    </li>
+                    <li class="px-4 py-3 hover:bg-bgpage transition flex gap-3">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0">RK</div>
+                        <div class="min-w-0">
+                            <p class="text-sm text-textprimary font-medium truncate">Ravi Kumar</p>
+                            <p class="text-xs text-textsecondary truncate">Import finished, please check.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <a href="{% url 'MessagePage' %}" class="block text-center text-sm font-medium text-accent hover:text-primary py-2.5 border-t border-bordercolor transition"> View all messages </a>
+            </div>
+        </div>
+
+        <div class="w-px h-6 bg-bordercolor mx-1 hidden sm:block"></div>
+
+        <!-- Profile dropdown -->
+        <div class="relative">
+            <button id="profileBtn" class="flex items-center gap-2 pl-1 pr-2 sm:pr-3 h-10 rounded-xl hover:bg-bgpage transition">
+                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-semibold shrink-0">
+                    <img src="/media/{{login_user_image}}" alt="no profile....">
+                </div>
+                <span class="hidden sm:block text-sm font-medium text-textprimary">{{ login_user_name }}</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-textsecondary hidden sm:block"></i>
+            </button>
+
+            <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+                <div class="px-4 py-3 border-b border-bordercolor">
+                    <p class="text-sm font-semibold text-textprimary">{{ login_user_name }}</p>
+                    <p class="text-xs text-textsecondary truncate">{{ login_user.email }}</p>
+                </div>
+
+                <div class="py-1">
+                    <a href="{% url 'ProfilePage' %}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-textsecondary hover:bg-bgpage transition">
+                        <i class="fa-regular fa-user w-4 text-center"></i>
+                        <span>Profile</span>
+                    </a>
+
+                    <a href="{% url 'SettingsPage' %}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-textsecondary hover:bg-bgpage transition">
+                        <i class="fa-solid fa-gear w-4 text-center"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+
+                <div class="py-1 border-t border-bordercolor">
+                    <a href="{% url 'DashboardLogoutPage' %}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-danger hover:bg-danger/5 transition">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,9 +1,22 @@
 {% extends "base/base.html" %} 
 {% load static %} 
-{% load custom_filters %} 
 
 {% block title %} 
-    {{ article.title }} | {{ source.title|default:"Gen Voice News" }} {% endblock %} 
+    {{ article.seo_title }} | {{ source.name|default:"Gen Voice News" }} 
+{% endblock %}
+
+{% if meta_description %}
+    {% block meta_description %}{{ article.seo_description }}{% endblock %}
+{% endif  %}
+
+{% if meta_keywords %}
+    {% block meta_keywords %}{{ article.focus_keyword }}{% endblock %}
+{% endif  %}
+
+{% if canonical %}
+    {% block canonical %}{{ article.canonical_url }}{% endblock %} 
+{% endif  %}
+
     
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/news_detail.css' %}" />
@@ -18,8 +31,8 @@
         <span class="breadcrumb-sep">›</span>
         <a href="{% url 'HomePage' %}#news">News</a>
         {% if primary_category %}
-        <span class="breadcrumb-sep">›</span>
-        <span>{{ primary_category.label }}</span>
+            <span class="breadcrumb-sep">›</span>
+            <span>{{ primary_category.name }}</span>
         {% endif %}
         <span class="breadcrumb-sep">›</span>
         <span class="breadcrumb-current">{{ article.title|truncatechars:60 }}</span>
@@ -29,77 +42,58 @@
         <!-- ============ MAIN COLUMN ============ -->
         <main class="detail-main">
             {% if primary_category %}
-                <span class="tag-pill">{{ primary_category.label }}</span>
+                <span class="tag-pill">{{ primary_category.name }}</span>
             {% endif %}
 
             <h1 class="detail-title">{{ article.title }}</h1>
 
             <div class="detail-meta">
-                <span class="meta-source"> {% if source.title %}<strong>{{ source.title }}</strong>{% endif %} </span>
+                <span class="meta-source"> {% if source.name %}<strong>{{ source.name }}</strong>{% endif %} </span>
                 <span class="meta-dot">•</span>
-                <span class="meta-date">{{ article.dateTimePub|date:"F j, Y — g:i A" }}</span>
-                {% if article.authors %}
+                <span class="meta-date">{{ article.publish_date|date:"F j, Y — g:i A" }}</span>
+                {% if article.authors.exists %}
                 <span class="meta-dot">•</span>
                 <span class="meta-author">
-                    By {% for a in article.authors %}{{ a.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    By {% for a in article.authors.all %}{{ a.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
                 </span>
                 {% endif %}
                 <span class="meta-dot">•</span>
                 <span class="meta-reading-time">{{ reading_time }} min read</span>
             </div>
 
-            {% if article.image %}
+            {% if article.featured_image %}
             <figure class="detail-featured-image">
-                <img src="{{ article.image }}" alt="{{ article.title }}" loading="eager" />
+                <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="eager" />
             </figure>
             {% endif %}
 
             <!-- Social share -->
             <div class="share-bar">
                 <span class="share-label">Share:</span>
-                <a
-                    class="share-btn share-fb"
-                    target="_blank"
-                    rel="noopener"
-                    href="https://www.facebook.com/sharer/sharer.php?u={{ current_url|urlencode }}"
-                    >Facebook</a
-                >
-                <a
-                    class="share-btn share-x"
-                    target="_blank"
-                    rel="noopener"
-                    href="https://twitter.com/intent/tweet?url={{ current_url|urlencode }}&text={{ article.title|urlencode }}"
-                    >X</a
-                >
-                <a
-                    class="share-btn share-linkedin"
-                    target="_blank"
-                    rel="noopener"
-                    href="https://www.linkedin.com/sharing/share-offsite/?url={{ current_url|urlencode }}"
-                    >LinkedIn</a
-                >
-                <a
-                    class="share-btn share-whatsapp"
-                    target="_blank"
-                    rel="noopener"
-                    href="https://api.whatsapp.com/send?text={{ article.title|urlencode }}%20{{ current_url|urlencode }}"
-                    >WhatsApp</a
-                >
-                <button
-                    class="share-btn share-copy"
-                    type="button"
-                    onclick="navigator.clipboard.writeText('{{ current_url }}'); this.textContent='Copied!'">
+                <a class="share-btn share-fb" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u={{ current_url|urlencode }}">
+                    Facebook
+                </a>
+                <a class="share-btn share-x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url={{ current_url|urlencode }}&text={{ article.title|urlencode }}">
+                    X
+                </a>
+                <a class="share-btn share-linkedin" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url={{ current_url|urlencode }}">
+                    LinkedIn
+                </a>
+                <a class="share-btn share-whatsapp" target="_blank" rel="noopener" href="https://api.whatsapp.com/send?text={{ article.title|urlencode }}%20{{ current_url|urlencode }}">
+                    WhatsApp
+                </a>
+                <button class="share-btn share-copy" type=  "button" onclick="navigator.clipboard.writeText('{{ current_url }}'); this.textContent='Copied!'">
                     Copy Link
                 </button>
             </div>
 
             <!-- Article body -->
-            <article class="detail-body">{{ article.body|linebreaks }}</article>
+            <article class="detail-body">{{ article.content|safe }}</article>
 
-            {% if article.url %}
+            {% if source.url %}
             <div class="source-link-box">
                 <span>Originally published on</span>
-                <a href="{{ article.url }}" target="_blank" rel="noopener nofollow">{{ source.title|default:article.url }}</a>
+                <a href="{{ source.url }}" target="_blank" rel="noopener nofollow">{{ source.name|default:source.url }}</a>
             </div>
             {% endif %}
 
@@ -117,13 +111,13 @@
             </section>
             {% endif %}
 
-            <!-- Concepts / Keywords -->
-            {% if concepts %}
+            <!-- Tags -->
+            {% if popular_tags %}
             <section class="detail-keywords">
                 <h3 class="section-heading">Keywords &amp; Related Topics</h3>
                 <div class="chip-list">
-                    {% for c in concepts|slice:":15" %}
-                    <span class="chip">{{ c.label.eng }}</span>
+                    {% for tag in popular_tags %}
+                    <span class="chip">{{ tag }}</span>
                     {% endfor %}
                 </div>
             </section>
@@ -135,49 +129,28 @@
                 <h3 class="section-heading">Categories</h3>
                 <div class="chip-list">
                     {% for cat in categories %}
-                    <span class="chip chip-outline">{{ cat.label }}</span>
+                    <span class="chip chip-outline">{{ cat.name }}</span>
                     {% endfor %}
                 </div>
             </section>
             {% endif %}
 
-            <!-- Metadata table: everything else the API returned -->
+            <!-- Metadata table -->
             <section class="detail-info-table">
                 <h3 class="section-heading">Article Information</h3>
                 <table class="info-table">
                     <tbody>
                         <tr>
                             <th>Source Website</th>
-                            <td>{{ source.uri|default:"—" }}</td>
+                            <td>{{ source.url|default:"—" }}</td>
                         </tr>
                         <tr>
-                            <th>Article URL</th>
-                            <td>
-                                <a href="{{ article.url }}" target="_blank" rel="noopener nofollow">{{ article.url|truncatechars:70 }}</a>
-                            </td>
+                            <th>Reading Time</th>
+                            <td>{{ reading_time }} min</td>
                         </tr>
                         <tr>
-                            <th>Language</th>
-                            <td>{{ article.lang|upper|default:"—" }}</td>
-                        </tr>
-                        {% if location.label %}
-                        <tr>
-                            <th>Location</th>
-                            <td>{{ location.label.eng|default:location.label }}</td>
-                        </tr>
-                        {% endif %} {% if sentiment != None %}
-                        <tr>
-                            <th>Sentiment</th>
-                            <td>
-                                <span class="sentiment-badge sentiment-{{ sentiment|sentiment_label|lower }}">
-                                    {{ sentiment|sentiment_label }} ({{ sentiment|floatformat:2 }})
-                                </span>
-                            </td>
-                        </tr>
-                        {% endif %}
-                        <tr>
-                            <th>Data Provider</th>
-                            <td>Event Registry</td>
+                            <th>Views</th>
+                            <td>{{ article.view_count }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -186,14 +159,14 @@
             <!-- Prev / Next -->
             <nav class="prev-next-nav">
                 {% if prev_article %}
-                <a class="prev-next-card prev" href="{% url 'news_detail' prev_article.uri|encode_uri %}">
+                <a class="prev-next-card prev" href="{% url 'news_detail' prev_article.slug %}">
                     <span class="prev-next-label">← Previous Article</span>
                     <span class="prev-next-title">{{ prev_article.title|truncatechars:70 }}</span>
                 </a>
                 {% else %}
                 <span class="prev-next-card disabled"><span class="prev-next-label">← Previous Article</span></span>
                 {% endif %} {% if next_article %}
-                <a class="prev-next-card next" href="{% url 'news_detail' next_article.uri|encode_uri %}">
+                <a class="prev-next-card next" href="{% url 'news_detail' next_article.slug %}">
                     <span class="prev-next-label">Next Article →</span>
                     <span class="prev-next-title">{{ next_article.title|truncatechars:70 }}</span>
                 </a>
@@ -208,12 +181,12 @@
                 <h3 class="section-heading">Related News</h3>
                 <div class="related-cards-grid">
                     {% for rel in related_articles %}
-                    <a class="related-card" href="{% url 'news_detail' rel.uri|encode_uri %}">
-                        {% if rel.image %}<img src="{{ rel.image }}" alt="{{ rel.title }}" loading="lazy" />{% endif %}
+                    <a class="related-card" href="{% url 'news_detail' rel.slug %}">
+                        {% if rel.featured_image %}<img src="{{ rel.featured_image.url }}" alt="{{ rel.title }}" loading="lazy" />{% endif %}
                         <div class="related-card-body">
-                            <span class="related-card-source">{{ rel.source.title }}</span>
+                            <span class="related-card-source">{{ rel.source.name|default:rel.category.name }}</span>
                             <h4>{{ rel.title|truncatechars:80 }}</h4>
-                            <span class="related-card-date">{{ rel.dateTimePub|date:"Y-m-d" }}</span>
+                            <span class="related-card-date">{{ rel.publish_date|date:"Y-m-d" }}</span>
                         </div>
                     </a>
                     {% endfor %}
@@ -240,12 +213,12 @@
                 <ul class="sidebar-list">
                     {% for item in latest_articles %}
                     <li>
-                        <a href="{% url 'news_detail' item.uri|encode_uri %}">
-                            {% if item.image %}<img src="{{ item.image }}" alt="{{ item.title }}" loading="lazy" />{% endif %}
+                        <a href="{% url 'news_detail' item.slug %}">
+                            {% if item.featured_image %}<img src="{{ item.featured_image.url }}" alt="{{ item.title }}" loading="lazy" />{% endif %}
                             <div>
-                                <span class="sidebar-item-source">{{ item.source.title }}</span>
+                                <span class="sidebar-item-source">{{ item.source.name|default:item.category.name }}</span>
                                 <p>{{ item.title|truncatechars:65 }}</p>
-                                <span class="sidebar-item-date">{{ item.dateTimePub|date:"Y-m-d" }}</span>
+                                <span class="sidebar-item-date">{{ item.publish_date|date:"Y-m-d" }}</span>
                             </div>
                         </a>
                     </li>
@@ -259,9 +232,9 @@
                     {% for item in trending_articles %}
                     <li>
                         <span class="rank">{{ forloop.counter }}</span>
-                        <a href="{% url 'news_detail' item.uri|encode_uri %}">
+                        <a href="{% url 'news_detail' item.slug %}">
                             <p>{{ item.title|truncatechars:65 }}</p>
-                            <span class="sidebar-item-source">{{ item.source.title }}</span>
+                            <span class="sidebar-item-source">{{ item.source.name|default:item.category.name }}</span>
                         </a>
                     </li>
                     {% endfor %}
@@ -273,9 +246,9 @@
                 <ul class="sidebar-list">
                     {% for item in related_articles|slice:":4" %}
                     <li>
-                        <a href="{% url 'news_detail' item.uri|encode_uri %}">
+                        <a href="{% url 'news_detail' item.slug %}">
                             <p>{{ item.title|truncatechars:65 }}</p>
-                            <span class="sidebar-item-source">{{ item.source.title }}</span>
+                            <span class="sidebar-item-source">{{ item.source.name|default:item.category.name }}</span>
                         </a>
                     </li>
                     {% endfor %}
@@ -292,7 +265,7 @@
             <div class="sidebar-box">
                 <h4>Popular Tags</h4>
                 <div class="chip-list">
-                    {% for tag in popular_tags %} {% if tag %}<span class="chip chip-small">{{ tag }}</span>{% endif %} {% endfor %}
+                    {% for tag in popular_tags %}<span class="chip chip-small">{{ tag }}</span>{% endfor %}
                 </div>
             </div>
             {% endif %}

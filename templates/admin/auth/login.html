@@ -6,36 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | GenVoice Portal</title>
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- <link rel="stylesheet" href="{% static 'css/output.css' %}"> -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ["Inter", "sans-serif"],
-                    },
-                    colors: {
-                        primary: "#0A1E5E",
-                        accent: "#2563EB",
-                        success: "#22C55E",
-                        warning: "#F59E0B",
-                        danger: "#EF4444",
-                        bgpage: "#F8FAFC",
-                        bordercolor: "#E5E7EB",
-                        textprimary: "#111827",
-                        textsecondary: "#6B7280",
-                    },
-                    borderRadius: {
-                        xl: "12px",
-                    },
-                },
-            },
-        };
-    </script>
+
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/main.css' %}">
     <style>
         body {
             font-family: "Inter", sans-serif;
@@ -61,7 +36,8 @@
             </div>
 
             <!-- Form -->
-            <form class="space-y-5" novalidate>
+            <form method="POST" class="space-y-5">
+                {% csrf_token %}
                 <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-textprimary mb-1.5"> Email address </label>
@@ -69,14 +45,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
                             <i class="fa-regular fa-envelope text-sm"></i>
                         </span>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            required
-                            autocomplete="email"
-                            placeholder="you@newsportal.com"
-                            class="w-full h-12 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        <input type="email" id="email" name="email" required autocomplete="email" placeholder="you@newsportal.com" class="w-full h-12 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
                     </div>
                 </div>
 
@@ -90,20 +59,8 @@
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
                             <i class="fa-solid fa-lock text-sm"></i>
                         </span>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            required
-                            autocomplete="current-password"
-                            placeholder="Enter your password"
-                            class="w-full h-12 pl-10 pr-11 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
-                        <button
-                            type="button"
-                            id="togglePassword"
-                            aria-label="Show password"
-                            aria-pressed="false"
-                            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary hover:text-textprimary transition">
+                        <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password" class="w-full h-12 pl-10 pr-11 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        <button type="button" id="togglePassword" aria-label="Show password" aria-pressed="false" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary hover:text-textprimary transition">
                             <i class="fa-regular fa-eye text-sm" id="toggleIcon"></i>
                         </button>
                     </div>
@@ -111,20 +68,14 @@
 
                 <!-- Remember Me -->
                 <div class="flex items-center">
-                    <input
-                        type="checkbox"
-                        id="remember"
-                        name="remember"
-                        class="h-4 w-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                    <input type="checkbox" id="remember" name="remember" class="h-4 w-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
                     <label for="remember" class="ml-2 text-sm text-textsecondary cursor-pointer select-none">
                         Remember me for 30 days
                     </label>
                 </div>
 
                 <!-- Login Button -->
-                <button
-                    type="submit"
-                    class="w-full h-12 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center justify-center gap-2">
+                <button type="submit" class="w-full h-12 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-right-to-bracket text-sm"></i>
                     Log in
                 </button>

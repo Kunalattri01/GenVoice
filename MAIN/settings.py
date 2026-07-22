@@ -44,6 +44,14 @@ INSTALLED_APPS = [
     'UserInterface',
     'pages',
     'accounts',
+    'articles',
+    'dashboard',
+    'notifications',
+    'settings_app',
+    'api_import',
+    'comments',
+    'core',
+    'taxonomy',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +92,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'accounts.context_processors.context_processors.login_details',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -96,12 +105,29 @@ WSGI_APPLICATION = 'MAIN.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+AUTH_USER_MODEL = "accounts.User"
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "mssql",
+        "NAME": "GenVoice",      # Your database name
+        "HOST": "DELL\SQLEXPRESS",
+        "PORT": "",
+        "OPTIONS": {
+            "driver": "ODBC Driver 17 for SQL Server",
+            "trusted_connection": "yes",
+            "TrustServerCertificate": "yes",
+        },
     }
 }
+
 
 
 # Password validation
@@ -147,10 +173,13 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-EVENT_REGISTRY_API_KEY = 'f60e6a27-5803-4d57-a930-a387bcf5eb3d' # Live
+# EVENT_REGISTRY_API_KEY = 'f60e6a27-5803-4d57-a930-a387bcf5eb3d' # Live
 
-# EVENT_REGISTRY_API_KEY = 'a8dd4f60-189d-4dbe-ae24-138106893eaa' # Development
+EVENT_REGISTRY_API_KEY = 'a8dd4f60-189d-4dbe-ae24-138106893eaa' # Development

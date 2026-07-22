@@ -1,0 +1,142 @@
+{% extends 'admin/base/base.html' %}
+{% block title %} Profile | GenVoice News Portal {% endblock %}
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %}
+    <div class="mb-6">
+        <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+            <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-textprimary font-medium">Profile</span>
+        </nav>
+        <h1 class="text-xl font-semibold text-textprimary">Profile</h1>
+        <p class="text-sm text-textsecondary mt-1">Manage your personal information and account settings</p>
+    </div>
+{% endblock %}
+
+{% block page_content %}
+    <!-- ============ PROFILE HEADER CARD ============ -->
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 sm:p-8 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+            <div class="relative shrink-0">
+                <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white text-2xl font-semibold overflow-hidden">
+                    {% if request.user.profile_image %}
+                        <img src="{{ request.user.profile_image.url }}" alt="{{ request.user.get_full_name }}" class="w-full h-full object-cover" />
+                    {% else %}
+                        {{ request.user.first_name|slice:":1"|upper }}{{ request.user.last_name|slice:":1"|upper }}
+                    {% endif %}
+                </div>
+                <button type="button" onclick="document.getElementById('avatarUploadInput').click()" class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white border border-bordercolor flex items-center justify-center text-textsecondary hover:text-accent hover:border-accent transition" aria-label="Change avatar">
+                    <i class="fa-solid fa-camera text-xs"></i>
+                </button>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h2 class="text-lg font-semibold text-textprimary">{{ request.user.get_full_name|default:request.user.username }}</h2>
+                <span class="inline-block mt-1 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">{{ request.user.get_role_display }}</span>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-5 mt-3 text-sm text-textsecondary">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-regular fa-envelope text-xs"></i>
+                        {{ request.user.email|default:"—" }}
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-xs"></i>
+                        {{ request.user.phone_number|default:"—" }}
+                    </span>
+                    <span class="flex items-center gap-2">
+                        {% if request.user.is_verified %}
+                            <i class="fa-solid fa-circle-check text-success text-xs"></i>
+                            <span class="text-success">Verified</span>
+                        {% else %}
+                            <i class="fa-solid fa-circle-exclamation text-warning text-xs"></i>
+                            <span class="text-warning">Not verified</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- ============ LEFT COLUMN: FORMS ============ -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Profile Form -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <h2 class="text-sm font-semibold text-textprimary mb-5">Personal Information</h2>
+                <form id="profileForm" method="post" action="{% url 'ProfilePage' %}" enctype="multipart/form-data" class="space-y-5">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_profile">
+                    <input type="file" id="avatarUploadInput" name="profile_image" accept="image/*" class="hidden" onchange="document.getElementById('profileForm').submit()">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-textprimary mb-1.5">Full name</label>
+                            <input type="text" id="fullName" name="full_name" value="{{ request.user.get_full_name }}" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                        <div>
+                            <label for="role" class="block text-sm font-medium text-textprimary mb-1.5">Role</label>
+                            <input type="text" id="role" value="{{ request.user.get_role_display }}" disabled class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-bgpage text-sm text-textsecondary cursor-not-allowed" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-textprimary mb-1.5">Email address</label>
+                            <input type="email" id="email" name="email" value="{{ request.user.email }}" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-textprimary mb-1.5">Phone number</label>
+                            <input type="tel" id="phone" name="phone_number" value="{{ request.user.phone_number }}" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-2">
+                        <button type="submit" class="h-11 px-6 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2">
+                            <i class="fa-regular fa-floppy-disk text-sm"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <h2 class="text-sm font-semibold text-textprimary mb-5">Change Password</h2>
+                <form method="post" action="{% url 'ProfilePage' %}" class="space-y-5">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div>
+                        <label for="currentPassword" class="block text-sm font-medium text-textprimary mb-1.5">Current password</label>
+                        <input type="password" id="currentPassword" name="current_password" placeholder="Enter current password" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="newPassword" class="block text-sm font-medium text-textprimary mb-1.5">New password</label>
+                            <input type="password" id="newPassword" name="new_password" placeholder="Enter new password" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                        <div>
+                            <label for="confirmPassword" class="block text-sm font-medium text-textprimary mb-1.5" >Confirm new password</label >
+                            <input type="password" id="confirmPassword" name="confirm_password" placeholder="Re-enter new password" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                    </div>
+                    <p class="text-xs text-textsecondary">Password must be at least 8 characters long.</p>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="h-11 px-6 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2">
+                            <i class="fa-solid fa-key text-sm"></i>
+                            Change Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ============ RIGHT COLUMN: ACTIVITY TIMELINE ============ -->
+        <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 h-fit">
+            <h2 class="text-sm font-semibold text-textprimary mb-5">Activity Timeline</h2>
+            <div class="text-sm text-textsecondary">
+                Activity tracking isn't set up yet — this needs an activity log model to show real events here.
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'admin/base/base.html' %} 
+
+{% block title %} Sources | GenVoice News Portal {% endblock %}
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %} 
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">Sources</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">Sources</h1>
+            <p class="text-sm text-textsecondary mt-1">Manage external publication sources</p>
+        </div>
+        <button id="openCreateModal" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-plus text-sm"></i>
+            Add Source
+        </button>
+    </div>
+{% endblock %}
+
+
+<!-- ============ TOOLBAR: SEARCH ============ -->
+{% block toolbar %}
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="relative max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </span>
+            <input type="text" placeholder="Search sources..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block thead %}
+    <tr class="text-left text-textsecondary">
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Logo</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Source</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">URL</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Article Count</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Created</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+    </tr>
+{% endblock %}
+
+
+{% block tbody %}
+    {% if report_data %}
+        {% for source in report_data %}
+            <tr class="hover:bg-bgpage transition">
+                <td class="px-6 py-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center overflow-hidden shrink-0">
+                        {% if source.logo %}
+                            <img src="{{ source.logo.url }}" alt="{{ source.name }}" class="w-full h-full object-cover" />
+                        {% else %}
+                            <i class="fa-solid fa-globe text-accent text-sm"></i>
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="px-6 py-3.5 text-textprimary font-medium whitespace-nowrap"> {{ source.name }} </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ source.url|default:"—" }} </td>
+                <td class="px-6 py-3.5">
+                    {% if source.is_active %}
+                        <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full"> Active </span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full"> Inactive </span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ source.articles.count|default:"0" }} </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ source.entry_on|date:"M d, Y" }} </td>
+                <td class="px-6 py-3.5">
+                    <div class="flex items-center justify-end gap-1">
+                        <button
+                            class="edit-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-accent/10 hover:text-accent transition"
+                            data-id="{{ source.id }}"
+                            data-name="{{ source.name }}"
+                            data-url="{{ source.url|default_if_none:'' }}"
+                            data-status="{% if source.is_active %}Active{% else %}Inactive{% endif %}"
+                            aria-label="Edit Source">
+                            <i class="fa-solid fa-pen text-sm"></i>
+                        </button>
+
+                        <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" data-id="{{ source.id }}" data-name="{{ source.name }}" aria-label="Delete Source">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7" class="px-6 py-16 text-center">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-bgpage flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-globe text-2xl text-textsecondary"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-textprimary">
+                        No Sources Found
+                    </h3>
+                    <p class="text-sm text-textsecondary mt-2">
+                        There are no sources available. Click
+                        <strong>"Add Source"</strong> to create your first source.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}
+
+
+{% block page_content %}
+    <!-- ============ CREATE SOURCE MODAL ============ -->
+    <div id="createModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="createModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Add Source</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="createModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form method="post" action="{% url 'SourcesPage' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label for="createName" class="block text-sm font-medium text-textprimary mb-1.5">Source name</label>
+                        <input type="text" id="createName" name="name" placeholder="e.g. Reuters" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+
+                    <div>
+                        <label for="createUrl" class="block text-sm font-medium text-textprimary mb-1.5">Website URL</label>
+                        <input type="url" id="createUrl" name="url" placeholder="https://reuters.com" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+
+                    <div>
+                        <label for="createLogo" class="block text-sm font-medium text-textprimary mb-1.5">Logo</label>
+                        <input type="file" id="createLogo" name="logo" accept="image/*" class="w-full text-sm text-textprimary file:mr-4 file:h-11 file:px-4 file:rounded-xl file:border-0 file:bg-bgpage file:text-textprimary file:text-sm file:font-medium hover:file:bg-bordercolor/40 transition" />
+                    </div>
+
+                    <div>
+                        <label for="createStatus" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                        <div class="relative">
+                            <select id="createStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                <option>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="createModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Create Source </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ EDIT SOURCE MODAL ============ -->
+    <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="editModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Edit Source</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="editModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form method="post" action="{% url 'SourcesPage' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="source_id" id="edit_source_id">
+
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label for="editName" class="block text-sm font-medium text-textprimary mb-1.5">Source name</label>
+                        <input type="text" id="editName" name="name" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+
+                    <div>
+                        <label for="editUrl" class="block text-sm font-medium text-textprimary mb-1.5">Website URL</label>
+                        <input type="url" id="editUrl" name="url" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+
+                    <div>
+                        <label for="editLogo" class="block text-sm font-medium text-textprimary mb-1.5">Logo</label>
+                        <input type="file" id="editLogo" name="logo" accept="image/*" class="w-full text-sm text-textprimary file:mr-4 file:h-11 file:px-4 file:rounded-xl file:border-0 file:bg-bgpage file:text-textprimary file:text-sm file:font-medium hover:file:bg-bordercolor/40 transition" />
+                        <p class="text-xs text-textsecondary mt-1.5">Leave empty to keep the current logo</p>
+                    </div>
+
+                    <div>
+                        <label for="editStatus" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                        <div class="relative">
+                            <select id="editStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                <option>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="editModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Save Changes </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ DELETE SOURCE MODAL ============ -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="deleteModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-xl bg-danger/10 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                </div>
+                <h2 class="text-base font-semibold text-textprimary">Delete source?</h2>
+                <p class="text-sm text-textsecondary mt-2">
+                    Are you sure you want to delete <span class="font-medium text-textprimary" id="SourceName">"Source"</span>? This source will be marked
+                    inactive and hidden from active use. You can restore it anytime by editing it. This action can be undone.
+                </p>
+            </div>
+            <form method="post" action="{% url 'SourcesPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="source_id" id="delete_source_id">
+                <input type="hidden" name="action" value="delete">
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="deleteModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition"> Delete Source </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    document.getElementById("openCreateModal").addEventListener("click", () => openModal("createModal"));
+
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("edit_source_id").value = this.dataset.id;
+            document.getElementById("editName").value = this.dataset.name;
+            document.getElementById("editUrl").value = this.dataset.url;
+            document.getElementById("editStatus").value = this.dataset.status;
+
+            openModal("editModal");
+        });
+    });
+
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("delete_source_id").value = this.dataset.id;
+            document.getElementById("SourceName").innerText = this.dataset.name;
+
+            openModal("deleteModal");
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", () => closeModal(el.getAttribute("data-close")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            ["createModal", "editModal", "deleteModal"].forEach(closeModal);
+        }
+    });
+</script>
+{% endblock %}

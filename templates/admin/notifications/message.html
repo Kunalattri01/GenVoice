@@ -1,0 +1,305 @@
+{% extends 'admin/base/base.html' %}
+{% block title %} Message | GenVoice News Portal {% endblock %}
+
+{% block bodyContent %}
+<main class="flex-1 flex flex-col p-4 sm:p-6">
+    <!-- ============ HEADER + BREADCRUMB ============ -->
+    <div class="mb-6">
+        <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+            <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-textprimary font-medium">Messages</span>
+        </nav>
+        <h1 class="text-xl font-semibold text-textprimary">Messages</h1>
+        <p class="text-sm text-textsecondary mt-1">Chat with your team and collaborators</p>
+    </div>
+
+    <!-- ============ MESSAGES LAYOUT ============ -->
+    <div class="flex-1 bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden flex" style="min-height: 560px">
+        <!-- ============ CONVERSATION LIST ============ -->
+        <aside id="conversationList" class="w-full sm:w-80 border-r border-bordercolor flex flex-col shrink-0">
+            <!-- Search -->
+            <div class="p-4 border-b border-bordercolor">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" placeholder="Search conversations..." class="w-full h-10 pl-10 pr-4 rounded-xl border border-bordercolor bg-bgpage text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent focus:bg-white transition" />
+                </div>
+            </div>
+
+            <!-- List -->
+            <div class="flex-1 overflow-y-auto">
+                <button class="convo-item active w-full flex items-center gap-3 px-4 py-3.5 border-b border-bordercolor hover:bg-bgpage transition text-left" data-name="Sara Ahmed" data-initials="SA" data-status="online">
+                    <div class="relative shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold"> SA </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-success border-2 border-white"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-textprimary truncate">Sara Ahmed</p>
+                            <span class="text-xs text-textsecondary shrink-0">2m</span>
+                        </div>
+                        <p class="text-sm text-textsecondary truncate">Can you review the draft?</p>
+                    </div>
+                    <span class="text-[11px] font-semibold bg-accent text-white w-5 h-5 rounded-full flex items-center justify-center shrink-0">2</span>
+                </button>
+
+                <button class="convo-item w-full flex items-center gap-3 px-4 py-3.5 border-b border-bordercolor hover:bg-bgpage transition text-left" data-name="Ravi Kumar" data-initials="RK" data-status="offline">
+                    <div class="relative shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold"> RK </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-textsecondary border-2 border-white"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-textprimary truncate">Ravi Kumar</p>
+                            <span class="text-xs text-textsecondary shrink-0">1h</span>
+                        </div>
+                        <p class="text-sm text-textsecondary truncate">Import finished, please check.</p>
+                    </div>
+                </button>
+
+                <button class="convo-item w-full flex items-center gap-3 px-4 py-3.5 border-b border-bordercolor hover:bg-bgpage transition text-left" data-name="Aisha Menon" data-initials="AM" data-status="online">
+                    <div class="relative shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold"> AM </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-success border-2 border-white"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-textprimary truncate">Aisha Menon</p>
+                            <span class="text-xs text-textsecondary shrink-0">3h</span>
+                        </div>
+                        <p class="text-sm text-textsecondary truncate">Approved the sports category update.</p>
+                    </div>
+                </button>
+
+                <button class="convo-item w-full flex items-center gap-3 px-4 py-3.5 border-b border-bordercolor hover:bg-bgpage transition text-left" data-name="Daniel Cho" data-initials="DC" data-status="away">
+                    <div class="relative shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold"> DC </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-warning border-2 border-white"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-textprimary truncate">Daniel Cho</p>
+                            <span class="text-xs text-textsecondary shrink-0">1d</span>
+                        </div>
+                        <p class="text-sm text-textsecondary truncate">Thanks for the feedback!</p>
+                    </div>
+                </button>
+
+                <button class="convo-item w-full flex items-center gap-3 px-4 py-3.5 hover:bg-bgpage transition text-left" data-name="Omar Al-Farsi" data-initials="OA" data-status="offline">
+                    <div class="relative shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold"> OA </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-textsecondary border-2 border-white"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-textprimary truncate">Omar Al-Farsi</p>
+                            <span class="text-xs text-textsecondary shrink-0">2d</span>
+                        </div>
+                        <p class="text-sm text-textsecondary truncate">Welcome aboard!</p>
+                    </div>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ============ CHAT WINDOW ============ -->
+        <section id="chatWindow" class="hidden sm:flex flex-1 flex-col min-w-0">
+            <!-- Chat header -->
+            <div class="flex items-center gap-3 px-5 py-3.5 border-b border-bordercolor shrink-0">
+                <button id="backToListBtn" class="sm:hidden w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" aria-label="Back to conversations">
+                    <i class="fa-solid fa-arrow-left text-sm"></i>
+                </button>
+                <div class="relative shrink-0">
+                    <div id="chatAvatar" class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold"> SA </div>
+                    <span id="chatStatusDot" class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-success border-2 border-white"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p id="chatName" class="text-sm font-semibold text-textprimary truncate">Sara Ahmed</p>
+                    <p id="chatStatus" class="text-xs text-success">Online</p>
+                </div>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" aria-label="More options">
+                    <i class="fa-solid fa-ellipsis-vertical text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Messages area -->
+            <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4 bg-bgpage/40">
+                <div class="flex justify-center">
+                    <span class="text-xs text-textsecondary bg-bgpage px-3 py-1 rounded-full">Today</span>
+                </div>
+
+                <!-- Incoming message -->
+                <div class="flex items-end gap-2.5 max-w-[80%]">
+                    <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-semibold shrink-0"> SA </div>
+                    <div>
+                        <div class="bg-white border border-bordercolor rounded-xl rounded-bl-sm px-4 py-2.5">
+                            <p class="text-sm text-textprimary">Hey! Do you have a moment to review the draft on the transit plan?</p>
+                        </div>
+                        <p class="text-xs text-textsecondary mt-1 ml-1">9:12 AM</p>
+                    </div>
+                </div>
+
+                <!-- Outgoing message -->
+                <div class="flex items-end justify-end gap-2.5 max-w-[80%] ml-auto">
+                    <div>
+                        <div class="bg-primary rounded-xl rounded-br-sm px-4 py-2.5">
+                            <p class="text-sm text-white">Sure, send it over — I'll take a look this afternoon.</p>
+                        </div>
+                        <p class="text-xs text-textsecondary mt-1 mr-1 text-right">9:14 AM</p>
+                    </div>
+                </div>
+
+                <!-- Incoming message -->
+                <div class="flex items-end gap-2.5 max-w-[80%]">
+                    <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-semibold shrink-0"> SA </div>
+                    <div>
+                        <div class="bg-white border border-bordercolor rounded-xl rounded-bl-sm px-4 py-2.5">
+                            <p class="text-sm text-textprimary">Perfect, sending now. Also flagged a couple of quotes to double-check.</p>
+                        </div>
+                        <p class="text-xs text-textsecondary mt-1 ml-1">9:15 AM</p>
+                    </div>
+                </div>
+
+                <!-- Outgoing message -->
+                <div class="flex items-end justify-end gap-2.5 max-w-[80%] ml-auto">
+                    <div>
+                        <div class="bg-primary rounded-xl rounded-br-sm px-4 py-2.5">
+                            <p class="text-sm text-white">Got it, thanks! Can you review the draft?</p>
+                        </div>
+                        <p class="text-xs text-textsecondary mt-1 mr-1 text-right">9:16 AM</p>
+                    </div>
+                </div>
+
+                <!-- Typing indicator -->
+                <div id="typingIndicator" class="flex items-end gap-2.5">
+                    <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-semibold shrink-0"> SA </div>
+                    <div class="bg-white border border-bordercolor rounded-xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
+                        <span class="typing-dot w-1.5 h-1.5 rounded-full bg-textsecondary"></span>
+                        <span class="typing-dot w-1.5 h-1.5 rounded-full bg-textsecondary"></span>
+                        <span class="typing-dot w-1.5 h-1.5 rounded-full bg-textsecondary"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message input -->
+            <div class="border-t border-bordercolor p-4 shrink-0">
+                <div class="flex items-end gap-2">
+                    <button class="w-11 h-11 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition shrink-0" aria-label="Add attachment">
+                        <i class="fa-solid fa-paperclip text-sm"></i>
+                    </button>
+                    <button class="w-11 h-11 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition shrink-0" aria-label="Add emoji">
+                        <i class="fa-regular fa-face-smile text-sm"></i>
+                    </button>
+                    <div class="flex-1">
+                        <textarea rows="1" placeholder="Type a message..." class="w-full max-h-32 px-4 py-2.5 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                    </div>
+                    <button class="w-11 h-11 flex items-center justify-center rounded-xl bg-primary text-white hover:bg-primary/90 active:bg-primary/80 transition shrink-0" aria-label="Send message">
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}
+
+
+{% block extraCSS %}
+<style>
+    .convo-item.active {
+        background-color: #f8fafc;
+    }
+    @keyframes typingBounce {
+        0%,
+        60%,
+        100% {
+            transform: translateY(0);
+            opacity: 0.4;
+        }
+        30% {
+            transform: translateY(-3px);
+            opacity: 1;
+        }
+    }
+    .typing-dot {
+        animation: typingBounce 1.2s infinite;
+    }
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+</style>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    // ---------- Conversation selection ----------
+    const convoItems = document.querySelectorAll(".convo-item");
+    const chatWindow = document.getElementById("chatWindow");
+    const conversationList = document.getElementById("conversationList");
+    const chatAvatar = document.getElementById("chatAvatar");
+    const chatName = document.getElementById("chatName");
+    const chatStatus = document.getElementById("chatStatus");
+    const chatStatusDot = document.getElementById("chatStatusDot");
+
+    const statusMap = {
+        online: { label: "Online", textClass: "text-success", dotClass: "bg-success" },
+        away: { label: "Away", textClass: "text-warning", dotClass: "bg-warning" },
+        offline: { label: "Offline", textClass: "text-textsecondary", dotClass: "bg-textsecondary" },
+    };
+
+    function selectConversation(item) {
+        convoItems.forEach((i) => i.classList.remove("active"));
+        item.classList.add("active");
+
+        const unreadBadge = item.querySelector(".bg-accent");
+        if (unreadBadge) unreadBadge.remove();
+
+        chatAvatar.textContent = item.dataset.initials;
+        chatName.textContent = item.dataset.name;
+
+        const status = statusMap[item.dataset.status] || statusMap.offline;
+        chatStatus.textContent = status.label;
+        chatStatus.className = "text-xs " + status.textClass;
+        chatStatusDot.className = "absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white " + status.dotClass;
+
+        // Mobile: show chat window, hide list
+        if (window.innerWidth < 640) {
+            conversationList.classList.add("hidden");
+            chatWindow.classList.remove("hidden");
+            chatWindow.classList.add("flex");
+        }
+    }
+
+    convoItems.forEach((item) => {
+        item.addEventListener("click", () => selectConversation(item));
+    });
+
+    // ---------- Mobile back button ----------
+    document.getElementById("backToListBtn").addEventListener("click", () => {
+        chatWindow.classList.add("hidden");
+        chatWindow.classList.remove("flex");
+        conversationList.classList.remove("hidden");
+    });
+
+    // ---------- Responsive reset ----------
+    window.addEventListener("resize", () => {
+        if (window.innerWidth >= 640) {
+            conversationList.classList.remove("hidden");
+            chatWindow.classList.remove("hidden");
+            chatWindow.classList.add("flex");
+        }
+    });
+
+    // ---------- Auto-resize textarea ----------
+    const textarea = document.querySelector("textarea");
+    textarea.addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = Math.min(this.scrollHeight, 128) + "px";
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,404 @@
+{% extends 'admin/base/base.html' %}
+
+{% block title %} {% if article %}Edit Article{% else %}Article Create{% endif %} | GenVoice News Portal {% endblock %}
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <a href="{% url 'ListArticlesPage' %}" class="hover:text-textprimary transition">News Articles</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">{% if article %}Edit Article{% else %}Add Article{% endif %}</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">{% if article %}Edit Article{% else %}Add Article{% endif %}</h1>
+            <p class="text-sm text-textsecondary mt-1">{% if article %}Update this news article{% else %}Create and publish a new news article{% endif %}</p>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block page_content %}
+    <!-- ============ STICKY ACTION BAR ============ -->
+    <div class="sticky top-16 z-10 bg-white border border-bordercolor rounded-xl shadow-sm px-4 sm:px-5 py-3 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex items-center gap-2 text-sm text-textsecondary">
+            <i class="fa-regular fa-circle-dot text-warning"></i>
+            <span>{% if article %}{{ article.get_status_display }}{% else %}Draft{% endif %} &middot; {% if article.publish_date %}Published {{ article.publish_date|date:"M d, Y" }}{% else %}Not published{% endif %}</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <button type="button" class="h-10 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition flex items-center gap-2">
+                <i class="fa-regular fa-eye text-sm"></i>
+                Preview
+            </button>
+            <button type="submit" form="articleForm" id="saveDraftBtn" class="h-10 px-4 rounded-xl border border-bordercolor text-textprimary text-sm font-semibold hover:bg-bgpage transition flex items-center gap-2">
+                <i class="fa-regular fa-floppy-disk text-sm"></i>
+                Save Draft
+            </button>
+            <button type="submit" form="articleForm" id="publishBtn" class="h-10 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+                Publish
+            </button>
+        </div>
+    </div>
+
+    <form id="articleForm" class="grid grid-cols-1 lg:grid-cols-3 gap-6" method="post" enctype="multipart/form-data" action="{% url 'ManageArticlesPage' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="{% if article %}update{% else %}create{% endif %}">
+        {% if article %}<input type="hidden" name="article_id" value="{{ article.id }}">{% endif %}
+
+        <!-- ============ LEFT COLUMN: MAIN CONTENT ============ -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Headline / Slug / Summary -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 space-y-5">
+                <div>
+                    <label for="headline" class="block text-sm font-medium text-textprimary mb-1.5">Headline</label>
+                    <input type="text" id="headline" name="title" value="{{ article.title|default:'' }}" placeholder="Enter a compelling headline" class="w-full h-12 px-4 rounded-xl border border-bordercolor bg-white text-base text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="slug" class="block text-sm font-medium text-textprimary mb-1.5">Slug</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-textsecondary whitespace-nowrap">/news/</span>
+                        <input type="text" id="slug" value="{{ article.slug|default:'' }}" readonly placeholder="Generated automatically from headline" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-bgpage text-sm text-textsecondary placeholder:text-textsecondary/70 focus:outline-none transition" />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="summary" class="block text-sm font-medium text-textprimary mb-1.5">Summary</label>
+                    <textarea id="summary" rows="3" name="short_description" placeholder="A short summary shown in listings and previews" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none">{{ article.short_description|default:'' }}</textarea>
+                    <p class="text-xs text-textsecondary mt-1.5">Recommended length: 120–160 characters</p>
+                </div>
+            </div>
+
+            <!-- Featured Image Upload -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <label class="block text-sm font-medium text-textprimary mb-1.5">Featured image</label>
+                {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="w-full h-40 object-cover rounded-xl mb-3" />
+                {% endif %}
+                <div id="featuredImageDrop" class="flex items-center justify-center h-48 rounded-xl border border-dashed border-bordercolor text-center cursor-pointer hover:bg-bgpage transition">
+                    <div>
+                        <i class="fa-solid fa-cloud-arrow-up text-textsecondary text-xl mb-2"></i>
+                        <p id="featuredImageLabel" class="text-sm text-textsecondary">Click to upload or drag and drop</p>
+                        <p class="text-xs text-textsecondary mt-1">PNG, JPG up to 5MB &middot; Recommended 1200x630</p>
+                    </div>
+                </div>
+                <input type="file" id="featuredImage" name="featured_image" class="hidden" accept="image/*" />
+            </div>
+
+            <!-- Gallery Images Upload -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <label class="block text-sm font-medium text-textprimary mb-1.5">Gallery images</label>
+                <p class="text-xs text-textsecondary mb-3">Additional images shown in the article's gallery section</p>
+
+                {% if article and article.gallery_images.exists %}
+                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+                        {% for img in article.gallery_images.all %}
+                            <div class="rounded-xl overflow-hidden border border-bordercolor h-20">
+                                <img src="{{ img.image.url }}" alt="Gallery image" class="w-full h-full object-cover" />
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div id="galleryImagesDrop" class="flex items-center justify-center h-32 rounded-xl border border-dashed border-bordercolor text-center cursor-pointer hover:bg-bgpage transition">
+                    <div>
+                        <i class="fa-solid fa-images text-textsecondary text-xl mb-2"></i>
+                        <p id="galleryImagesLabel" class="text-sm text-textsecondary">Click to add gallery images</p>
+                        <p class="text-xs text-textsecondary mt-1">You can select multiple images at once</p>
+                    </div>
+                </div>
+                <input type="file" id="galleryImages" name="gallery_images" class="hidden" accept="image/*" multiple />
+            </div>
+
+            <!-- Rich Text Editor -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-bordercolor">
+                    <label class="block text-sm font-medium text-textprimary">Article content</label>
+                </div>
+                <!-- Toolbar placeholder -->
+                <div class="flex flex-wrap items-center gap-1 px-4 py-2.5 border-b border-bordercolor bg-bgpage">
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Bold">
+                        <i class="fa-solid fa-bold text-sm"></i>
+                    </button>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Italic">
+                        <i class="fa-solid fa-italic text-sm"></i>
+                    </button>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Underline">
+                        <i class="fa-solid fa-underline text-sm"></i>
+                    </button>
+                    <span class="w-px h-5 bg-bordercolor mx-1"></span>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Heading">
+                        <i class="fa-solid fa-heading text-sm"></i>
+                    </button>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Quote">
+                        <i class="fa-solid fa-quote-right text-sm"></i>
+                    </button>
+                    <span class="w-px h-5 bg-bordercolor mx-1"></span>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Bulleted list">
+                        <i class="fa-solid fa-list-ul text-sm"></i>
+                    </button>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Numbered list">
+                        <i class="fa-solid fa-list-ol text-sm"></i>
+                    </button>
+                    <span class="w-px h-5 bg-bordercolor mx-1"></span>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Insert link">
+                        <i class="fa-solid fa-link text-sm"></i>
+                    </button>
+                    <button type="button" class="w-9 h-9 flex items-center justify-center rounded-lg text-textsecondary hover:bg-white hover:text-textprimary transition" aria-label="Insert image">
+                        <i class="fa-regular fa-image text-sm"></i>
+                    </button>
+                </div>
+                <!-- Editable area -->
+                <div id="editorContent" contenteditable="true" class="min-h-[280px] px-6 py-5 text-sm text-textprimary focus:outline-none">{{ article.content|default:""|safe }}</div>
+                <textarea id="content" name="content" class="hidden"></textarea>
+            </div>
+
+            <!-- SEO Card -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 space-y-5">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass-chart text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">SEO Settings</h2>
+                </div>
+
+                <div>
+                    <label for="seoTitle" class="block text-sm font-medium text-textprimary mb-1.5">SEO title</label>
+                    <input type="text" id="seoTitle" name="seo_title" value="{{ article.seo_title|default:'' }}" placeholder="Title shown in search engine results" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="seoDescription" class="block text-sm font-medium text-textprimary mb-1.5">SEO description</label>
+                    <textarea id="seoDescription" rows="3" name="seo_description" placeholder="Description shown in search engine results" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none">{{ article.seo_description|default:'' }}</textarea>
+                </div>
+
+                <div>
+                    <label for="seoKeywords" class="block text-sm font-medium text-textprimary mb-1.5">Focus keyword</label>
+                    <input type="text" id="seoKeywords" name="focus_keyword" value="{{ article.focus_keyword|default:'' }}" placeholder="Primary SEO keyword for this article" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="canonicalUrl" class="block text-sm font-medium text-textprimary mb-1.5">Canonical URL</label>
+                    <input type="url" id="canonicalUrl" name="canonical_url" value="{{ article.canonical_url|default:'' }}" placeholder="https://example.com/news/article-slug" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ RIGHT COLUMN: PUBLISHING & META ============ -->
+        <div class="space-y-6">
+            <!-- Publish Settings -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 space-y-5">
+                <h2 class="text-sm font-semibold text-textprimary">Publish Settings</h2>
+
+                <div>
+                    <label for="status" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                    <div class="relative">
+                        <select id="status" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option value="draft" {% if article.status == "draft" or not article %}selected{% endif %}>Draft</option>
+                            <option value="pending_review" {% if article.status == "pending_review" %}selected{% endif %}>Pending Review</option>
+                            <option value="published" {% if article.status == "published" %}selected{% endif %}>Published</option>
+                            <option value="scheduled" {% if article.status == "scheduled" %}selected{% endif %}>Scheduled</option>
+                            <option value="archived" {% if article.status == "archived" %}selected{% endif %}>Archived</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="author" class="block text-sm font-medium text-textprimary mb-1.5">Author(s)</label>
+                    <select id="author" name="authors" multiple size="4" class="w-full px-4 py-2 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition">
+                        {% for a in authors %}
+                            <option value="{{ a.id }}" {% if article and a in article.authors.all %}selected{% endif %}>{{ a.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-xs text-textsecondary mt-1.5">Hold Ctrl/Cmd to select multiple</p>
+                </div>
+
+                <div>
+                    <label for="sourceSelect" class="block text-sm font-medium text-textprimary mb-1.5">Source</label>
+                    <div class="relative">
+                        <select id="sourceSelect" name="source" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option value="">No external source</option>
+                            {% for src in sources %}
+                                <option value="{{ src.id }}" {% if article.source_id == src.id %}selected{% endif %}>{{ src.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                    <p class="text-xs text-textsecondary mt-1.5">Optional — only for republished/attributed content</p>
+                </div>
+
+                <div>
+                    <label for="publishDate" class="block text-sm font-medium text-textprimary mb-1.5">Publish date</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-regular fa-calendar text-sm"></i>
+                        </span>
+                        <input type="datetime-local" id="publishDate" name="publish_date" value="{{ article.publish_date|date:'Y-m-d\TH:i'|default:'' }}" class="w-full h-11 pl-10 pr-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category / Tags -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 space-y-5">
+                <h2 class="text-sm font-semibold text-textprimary">Categorization</h2>
+
+                <div>
+                    <label for="category" class="block text-sm font-medium text-textprimary mb-1.5">Category</label>
+                    <div class="relative">
+                        <select id="category" name="category" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option value="">Select a category</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if article.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="tagsInput" class="block text-sm font-medium text-textprimary mb-1.5">Tags</label>
+                    <select id="tagsInput" name="tags" multiple size="5" class="w-full px-4 py-2 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition">
+                        {% for tag in tags %}
+                            <option value="{{ tag.id }}" {% if article and tag in article.tags.all %}selected{% endif %}>{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-xs text-textsecondary mt-1.5">Hold Ctrl/Cmd to select multiple</p>
+                </div>
+            </div>
+
+            <!-- Article Flags / Toggles -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6 space-y-1">
+                <h2 class="text-sm font-semibold text-textprimary mb-3">Article Flags</h2>
+
+                <input type="hidden" name="is_featured" id="is_featured_input" value="{% if article.is_featured %}true{% else %}false{% endif %}">
+                <input type="hidden" name="is_breaking_news" id="is_breaking_news_input" value="{% if article.is_breaking_news %}true{% else %}false{% endif %}">
+                <input type="hidden" name="is_editors_pick" id="is_editors_pick_input" value="{% if article.is_editors_pick %}true{% else %}false{% endif %}">
+                <input type="hidden" name="is_trending" id="is_trending_input" value="{% if article.is_trending %}true{% else %}false{% endif %}">
+
+                <div class="flex items-center justify-between py-3 border-t border-bordercolor">
+                    <div>
+                        <p class="text-sm font-medium text-textprimary">Featured</p>
+                        <p class="text-xs text-textsecondary">Show on homepage featured section</p>
+                    </div>
+                    <button type="button" data-target="is_featured_input" class="toggle-switch relative w-11 h-6 rounded-full {% if article.is_featured %}bg-accent{% else %}bg-bordercolor{% endif %} transition" role="switch" aria-checked="{% if article.is_featured %}true{% else %}false{% endif %}" aria-label="Toggle featured">
+                        <span class="toggle-dot absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition"></span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between py-3 border-t border-bordercolor">
+                    <div>
+                        <p class="text-sm font-medium text-textprimary">Breaking News</p>
+                        <p class="text-xs text-textsecondary">Display in breaking news banner</p>
+                    </div>
+                    <button type="button" data-target="is_breaking_news_input" class="toggle-switch relative w-11 h-6 rounded-full {% if article.is_breaking_news %}bg-accent{% else %}bg-bordercolor{% endif %} transition" role="switch" aria-checked="{% if article.is_breaking_news %}true{% else %}false{% endif %}" aria-label="Toggle breaking news">
+                        <span class="toggle-dot absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition"></span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between py-3 border-t border-bordercolor">
+                    <div>
+                        <p class="text-sm font-medium text-textprimary">Editor's Pick</p>
+                        <p class="text-xs text-textsecondary">Highlight as editor's selection</p>
+                    </div>
+                    <button type="button" data-target="is_editors_pick_input" class="toggle-switch relative w-11 h-6 rounded-full {% if article.is_editors_pick %}bg-accent{% else %}bg-bordercolor{% endif %} transition" role="switch" aria-checked="{% if article.is_editors_pick %}true{% else %}false{% endif %}" aria-label="Toggle editor's pick">
+                        <span class="toggle-dot absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition"></span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between py-3 border-t border-bordercolor">
+                    <div>
+                        <p class="text-sm font-medium text-textprimary">Trending</p>
+                        <p class="text-xs text-textsecondary">Include in trending articles widget</p>
+                    </div>
+                    <button type="button" data-target="is_trending_input" class="toggle-switch relative w-11 h-6 rounded-full {% if article.is_trending %}bg-accent{% else %}bg-bordercolor{% endif %} transition" role="switch" aria-checked="{% if article.is_trending %}true{% else %}false{% endif %}" aria-label="Toggle trending">
+                        <span class="toggle-dot absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    // ---------- Toggle switch behavior ----------
+    document.querySelectorAll(".toggle-switch").forEach((toggle) => {
+        const dot = toggle.querySelector(".toggle-dot");
+        if (toggle.getAttribute("aria-checked") === "true") {
+            dot.style.transform = "translateX(20px)";
+        }
+
+        toggle.addEventListener("click", () => {
+            const isOn = toggle.getAttribute("aria-checked") === "true";
+            const newState = !isOn;
+            toggle.setAttribute("aria-checked", String(newState));
+
+            if (newState) {
+                toggle.classList.remove("bg-bordercolor");
+                toggle.classList.add("bg-accent");
+                dot.style.transform = "translateX(20px)";
+            } else {
+                toggle.classList.add("bg-bordercolor");
+                toggle.classList.remove("bg-accent");
+                dot.style.transform = "translateX(0)";
+            }
+
+            const targetId = toggle.getAttribute("data-target");
+            if (targetId) {
+                document.getElementById(targetId).value = String(newState);
+            }
+        });
+    });
+
+    // ---------- Featured image preview ----------
+    const featuredImageInput = document.getElementById("featuredImage");
+    const featuredImageDrop = document.getElementById("featuredImageDrop");
+    const featuredImageLabel = document.getElementById("featuredImageLabel");
+
+    featuredImageDrop.addEventListener("click", () => featuredImageInput.click());
+    featuredImageInput.addEventListener("change", () => {
+        if (featuredImageInput.files.length > 0) {
+            featuredImageLabel.textContent = featuredImageInput.files[0].name;
+        }
+    });
+
+    // ---------- Gallery images preview ----------
+    const galleryImagesInput = document.getElementById("galleryImages");
+    const galleryImagesDrop = document.getElementById("galleryImagesDrop");
+    const galleryImagesLabel = document.getElementById("galleryImagesLabel");
+
+    galleryImagesDrop.addEventListener("click", () => galleryImagesInput.click());
+    galleryImagesInput.addEventListener("change", () => {
+        if (galleryImagesInput.files.length > 0) {
+            galleryImagesLabel.textContent = `${galleryImagesInput.files.length} image(s) selected`;
+        }
+    });
+
+    // ---------- Sync rich text editor into hidden textarea before submit ----------
+    const articleForm = document.getElementById("articleForm");
+    const editorContent = document.getElementById("editorContent");
+    const contentField = document.getElementById("content");
+
+    articleForm.addEventListener("submit", () => {
+        contentField.value = editorContent.innerHTML;
+    });
+
+    // ---------- Save Draft / Publish buttons set status before submit ----------
+    document.getElementById("saveDraftBtn").addEventListener("click", () => {
+        document.getElementById("status").value = "draft";
+    });
+
+    document.getElementById("publishBtn").addEventListener("click", () => {
+        document.getElementById("status").value = "published";
+    });
+</script>
+{% endblock %}

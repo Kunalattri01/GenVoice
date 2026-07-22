@@ -1,0 +1,408 @@
+{% extends 'admin/base/base.html' %} 
+{% block title %} API Import | GenVoice News Portal {% endblock %} 
+
+{% block bodyContent %}
+<main class="flex-1 p-4 sm:p-6">
+    <!-- ============ HEADER + BREADCRUMB ============ -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">API Imports</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">API Imports</h1>
+            <p class="text-sm text-textsecondary mt-1">Review and manage articles imported from external sources</p>
+        </div>
+        <button class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-arrows-rotate text-sm"></i>
+            Run Import
+        </button>
+    </div>
+
+    <!-- ============ TOOLBAR: SEARCH + FILTERS ============ -->
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="flex flex-col lg:flex-row gap-3 lg:items-center">
+            
+            <!-- Search -->
+            <div class="relative flex-1 min-w-[200px]">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" placeholder="Search imported articles..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+            </div>
+
+            <!-- Source Filter -->
+            <div class="relative">
+                <select class="w-full lg:w-44 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Sources</option>
+                    <option>Reuters API</option>
+                    <option>AP News API</option>
+                    <option>NewsData.io</option>
+                    <option>Custom RSS</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="relative">
+                <select class="w-full lg:w-44 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Status</option>
+                    <option>Pending Review</option>
+                    <option>Published</option>
+                    <option>Discarded</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ BULK ACTIONS BAR (hidden until selection) ============ -->
+    <div id="bulkActionsBar" class="hidden bg-white border border-accent/30 rounded-xl shadow-sm px-4 sm:px-5 py-3 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <p class="text-sm text-textprimary"><span id="selectedCount">0</span> articles selected</p>
+        <div class="flex items-center gap-3">
+            <button class="h-10 px-4 rounded-xl bg-success text-white text-sm font-semibold hover:bg-success/90 active:bg-success/80 transition flex items-center gap-2">
+                <i class="fa-solid fa-check text-sm"></i>
+                Publish Selected
+            </button>
+            <button class="h-10 px-4 rounded-xl bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition flex items-center gap-2">
+                <i class="fa-solid fa-xmark text-sm"></i>
+                Discard Selected
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ IMPORTED ARTICLES TABLE ============ -->
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-bgpage sticky top-0">
+                    <tr class="text-left text-textsecondary">
+                        <th class="px-6 py-3 font-medium whitespace-nowrap w-10">
+                            <input type="checkbox" id="selectAll" class="w-4 h-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                        </th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Source</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Title</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Category</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Imported Time</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-bordercolor">
+                    <tr class="import-row hover:bg-bgpage transition" data-title="Global markets react to central bank decision" data-source="Reuters API" data-category="Business" data-time="Jul 13, 2026, 8:02 AM" data-status="Pending Review" data-excerpt="Central banks across major economies signaled a coordinated approach to interest rates following this week's inflation data, sending ripples through global markets as investors recalibrated expectations for the remainder of the year.">
+                        <td class="px-6 py-3.5">
+                            <input type="checkbox" class="row-checkbox w-4 h-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-textsecondary">
+                                <i class="fa-solid fa-satellite-dish text-accent text-xs"></i>
+                                Reuters API
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textprimary font-medium max-w-xs truncate">
+                            Global markets react to central bank decision
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">Business</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">Jul 13, 2026, 8:02 AM</td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Pending Review</span>
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="preview-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage hover:text-textprimary transition" aria-label="Preview article">
+                                    <i class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-success/10 hover:text-success transition" aria-label="Publish article">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Discard article">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="import-row hover:bg-bgpage transition" data-title="Parliament debates new education funding bill" data-source="AP News API" data-category="Politics" data-time="Jul 13, 2026, 7:45 AM" data-status="Pending Review" data-excerpt="Lawmakers spent hours in heated debate over the proposed education funding bill, with opposition members raising concerns about long-term budget sustainability and regional distribution of resources.">
+                        <td class="px-6 py-3.5">
+                            <input type="checkbox" class="row-checkbox w-4 h-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-textsecondary">
+                                <i class="fa-solid fa-satellite-dish text-primary text-xs"></i>
+                                AP News API
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textprimary font-medium max-w-xs truncate">
+                            Parliament debates new education funding bill
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">Politics</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">Jul 13, 2026, 7:45 AM</td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Pending Review</span>
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="preview-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage hover:text-textprimary transition" aria-label="Preview article">
+                                    <i class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-success/10 hover:text-success transition" aria-label="Publish article">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Discard article">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="import-row hover:bg-bgpage transition" data-title="Championship finals set after dramatic semifinal" data-source="NewsData.io" data-category="Sports" data-time="Jul 13, 2026, 6:58 AM" data-status="Published" data-excerpt="A last-minute goal sealed a dramatic semifinal victory, setting up a highly anticipated championship finale between two of the league's strongest teams this season.">
+                        <td class="px-6 py-3.5">
+                            <input type="checkbox" class="row-checkbox w-4 h-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-textsecondary">
+                                <i class="fa-solid fa-satellite-dish text-warning text-xs"></i>
+                                NewsData.io
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textprimary font-medium max-w-xs truncate">
+                            Championship finals set after dramatic semifinal
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Sports</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">Jul 13, 2026, 6:58 AM</td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">Published</span>
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="preview-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage hover:text-textprimary transition" aria-label="Preview article">
+                                    <i class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary opacity-40 cursor-not-allowed" aria-label="Already published" disabled>
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Discard article">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="import-row hover:bg-bgpage transition opacity-60" data-title="Duplicate wire report on regional weather" data-source="Custom RSS" data-category="Weather" data-time="Jul 13, 2026, 6:10 AM" data-status="Discarded" data-excerpt="This wire report duplicated coverage already published from another source and was discarded to avoid redundant content on the site.">
+                        <td class="px-6 py-3.5">
+                            <input type="checkbox" class="row-checkbox w-4 h-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" disabled />
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-textsecondary">
+                                <i class="fa-solid fa-satellite-dish text-danger text-xs"></i>
+                                Custom RSS
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textprimary font-medium max-w-xs truncate">
+                            Duplicate wire report on regional weather
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="text-xs font-semibold text-textsecondary bg-bgpage px-2.5 py-1 rounded-full">Weather</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">Jul 13, 2026, 6:10 AM</td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full">Discarded</span>
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="preview-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage hover:text-textprimary transition" aria-label="Preview article">
+                                    <i class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Delete permanently">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="import-row hover:bg-bgpage transition" data-title="New device promises longer battery life" data-source="Reuters API" data-category="Technology" data-time="Jul 13, 2026, 5:40 AM" data-status="Pending Review" data-excerpt="The company claims its newest device offers up to 40 percent more battery life through a redesigned power management chip, though independent testing has yet to confirm the figures.">
+                        <td class="px-6 py-3.5">
+                            <input type="checkbox" class="row-checkbox w-4 h-4 rounded border-bordercolor text-accent focus:ring-2 focus:ring-accent/40 cursor-pointer" />
+                        </td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-textsecondary">
+                                <i class="fa-solid fa-satellite-dish text-accent text-xs"></i>
+                                Reuters API
+                            </span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textprimary font-medium max-w-xs truncate">New device promises longer battery life</td>
+                        <td class="px-6 py-3.5 whitespace-nowrap">
+                            <span class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">Technology</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">Jul 13, 2026, 5:40 AM</td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Pending Review</span>
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="preview-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage hover:text-textprimary transition" aria-label="Preview article">
+                                    <i class="fa-regular fa-eye text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-success/10 hover:text-success transition" aria-label="Publish article">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Discard article">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ============ PAGINATION ============ -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-bordercolor">
+            <p class="text-sm text-textsecondary">
+                Showing <span class="font-medium text-textprimary">1–5</span> of
+                <span class="font-medium text-textprimary">213</span> imported articles
+            </p>
+            <div class="flex items-center gap-1.5">
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl border border-bordercolor text-textsecondary hover:bg-bgpage transition" aria-label="Previous page">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-primary text-white text-sm font-medium">1</button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition"> 2 </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition"> 3 </button>
+                <span class="px-1 text-textsecondary">...</span>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition"> 22 </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl border border-bordercolor text-textsecondary hover:bg-bgpage transition" aria-label="Next page">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ============ PREVIEW MODAL ============ -->
+<div id="previewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="previewModal"></div>
+    <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+            <h2 class="text-base font-semibold text-textprimary">Preview Imported Article</h2>
+            <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="previewModal" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+                <span id="previewSourceBadge" class="text-xs font-semibold text-textsecondary bg-bgpage px-2.5 py-1 rounded-full">Reuters API</span>
+                <span id="previewCategoryBadge" class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">Business</span>
+                <span id="previewStatusBadge" class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Pending Review</span>
+            </div>
+            <h3 id="previewTitle" class="text-lg font-semibold text-textprimary">Global markets react to central bank decision</h3>
+            <p id="previewTime" class="text-xs text-textsecondary">Imported: Jul 13, 2026, 8:02 AM</p>
+            <div class="h-48 rounded-xl bg-bgpage border border-dashed border-bordercolor flex items-center justify-center">
+                <i class="fa-regular fa-image text-textsecondary text-xl"></i>
+            </div>
+            <p id="previewExcerpt" class="text-sm text-textsecondary leading-relaxed">
+                Central banks across major economies signaled a coordinated approach to interest rates following this week's inflation data,
+                sending ripples through global markets.
+            </p>
+        </div>
+        <div class="flex items-center justify-between px-6 py-4 border-t border-bordercolor">
+            <button class="h-11 px-4 rounded-xl bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition flex items-center gap-2">
+                <i class="fa-solid fa-xmark text-sm"></i>
+                Discard
+            </button>
+            <div class="flex items-center gap-3">
+                <button class="h-11 px-4 rounded-xl border border-bordercolor text-textprimary text-sm font-semibold hover:bg-bgpage transition" data-close="previewModal">
+                    Close
+                </button>
+                <button class="h-11 px-4 rounded-xl bg-success text-white text-sm font-semibold hover:bg-success/90 active:bg-success/80 transition flex items-center gap-2">
+                    <i class="fa-solid fa-check text-sm"></i>
+                    Publish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block extraJs %}
+<script>
+    // ---------- Modal open/close handling ----------
+    function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    document.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", () => closeModal(el.getAttribute("data-close")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal("previewModal");
+    });
+
+    // ---------- Preview modal population ----------
+    const statusColorMap = {
+        "Pending Review": "text-warning bg-warning/10",
+        Published: "text-success bg-success/10",
+        Discarded: "text-danger bg-danger/10",
+    };
+
+    document.querySelectorAll(".preview-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const row = btn.closest(".import-row");
+            document.getElementById("previewTitle").textContent = row.dataset.title;
+            document.getElementById("previewSourceBadge").textContent = row.dataset.source;
+            document.getElementById("previewCategoryBadge").textContent = row.dataset.category;
+            document.getElementById("previewTime").textContent = "Imported: " + row.dataset.time;
+            document.getElementById("previewExcerpt").textContent = row.dataset.excerpt;
+
+            const statusBadge = document.getElementById("previewStatusBadge");
+            statusBadge.textContent = row.dataset.status;
+            statusBadge.className =
+                "text-xs font-semibold px-2.5 py-1 rounded-full " + (statusColorMap[row.dataset.status] || "text-textsecondary bg-bgpage");
+
+            openModal("previewModal");
+        });
+    });
+
+    // ---------- Bulk selection ----------
+    const selectAll = document.getElementById("selectAll");
+    const rowCheckboxes = document.querySelectorAll(".row-checkbox:not(:disabled)");
+    const bulkActionsBar = document.getElementById("bulkActionsBar");
+    const selectedCount = document.getElementById("selectedCount");
+
+    function updateBulkBar() {
+        const checkedCount = document.querySelectorAll(".row-checkbox:checked").length;
+        selectedCount.textContent = checkedCount;
+        bulkActionsBar.classList.toggle("hidden", checkedCount === 0);
+    }
+
+    selectAll.addEventListener("change", () => {
+        rowCheckboxes.forEach((cb) => {
+            cb.checked = selectAll.checked;
+        });
+        updateBulkBar();
+    });
+
+    rowCheckboxes.forEach((cb) => {
+        cb.addEventListener("change", updateBulkBar);
+    });
+</script>
+{% endblock %}

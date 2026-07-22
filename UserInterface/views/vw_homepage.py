@@ -1,77 +1,45 @@
 from django.views import View
 from django.shortcuts import render
-import requests
+
+from articles.models import Article
 
 
 class HomePageView(View):
 
     def get(self, request):
+        published = (
+            Article.objects.filter(status=Article.Status.PUBLISHED, is_active=True)
+            .select_related("category", "source")
+            .prefetch_related("authors", "tags")
+        )
 
-        url = "https://eventregistry.org/api/v1/article/getArticles"
-
-        payload = {
-            "query": {
-                "$query": {
-                    "$and": [
-                        {
-                            "keyword": "India"
-                        }
-                    ]
-                }
-            },
-            "resultType": "articles",
-            "articlesCount": 60,
-            "apiKey": "f60e6a27-5803-4d57-a930-a387bcf5eb3d", # Live
-
-            # "apiKey": "a8dd4f60-189d-4dbe-ae24-138106893eaa", # Development
-        }
-
-        news_data = []
-
-        
-
-        try:
-            response = requests.post(url, json=payload)
-
-            if response.status_code == 200:
-                data = response.json()
-
-                news_data = data.get("articles", {}).get("results", [])
-
-                # print("Total Articles:", len(news_data))
-
-        except Exception as e:
-            print("ERROR:", e)
+        recent = list(published.order_by("-publish_date")[:10])
 
         context = {
-                "left_news": news_data[:2],
+            "left_news": recent[0:2],
+            "hero_main": recent[2] if len(recent) > 2 else None,
+            "hero_second": recent[3] if len(recent) > 3 else None,
+            "sidebar_news": recent[4:10],
 
-                "hero_main": news_data[2] if len(news_data) > 2 else None,
-                "hero_second": news_data[3] if len(news_data) > 3 else None,
+            "politics_news": self._by_category(published, "Politics", 5),
+            "finance_news": self._by_category(published, "Finance", 6),
+            "tech_news": self._by_category(published, "Technology", 6),
+            "travel_news": self._by_category(published, "Travel", 6),
+            "celebrities_news": self._by_category(published, "Celebrities", 5),
+            "food_news": self._by_category(published, "Food", 5),
+            "makeup_news": self._by_category(published, "Make-Up", 4),
+            "marketing_news": self._by_category(published, "Marketing", 6),
 
-                "sidebar_news": news_data[4:10],
+            "popular_posts": published.order_by("-view_count")[:5],
+            "must_read": published.order_by("-view_count")[5:10],
 
-                "politics_news": news_data[10:15],
-
-                "popular_posts": news_data[15:20],
-
-                "must_read": news_data[20:25],
-
-                "finance_news": news_data[25:31],
-
-                "tech_news": news_data[31:37],
-
-                "travel_news": news_data[37:43],
-
-                "celebrities_news": news_data[43:48],
-
-                "food_news": news_data[48:53],
-
-                "makeup_news": news_data[53:57],
-
-                "marketing_news": news_data[57:60],
-
-                "news": news_data,
+            "news": published,
         }
 
         return render(request, "UserInterface/homepage.html", context)
+
+    def _by_category(self, queryset, category_name, count):
+        return list(
+            queryset.filter(category__name__iexact=category_name)
+            .order_by("-publish_date")[:count]
+        )

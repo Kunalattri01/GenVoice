@@ -1,0 +1,515 @@
+{% extends 'admin/base/base.html' %} 
+
+{% block title %} User Management | GenVoice News Portal {% endblock %} 
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">Users</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">Users Management</h1>
+            <p class="text-sm text-textsecondary mt-1">Manage editors, authors, and administrators</p>
+        </div>
+        <button id="openCreateModal" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-user-plus text-sm"></i>
+            Add User
+        </button>
+    </div>
+{% endblock %}
+
+
+{% block page_content %}
+    <!-- ============ TOOLBAR: SEARCH + FILTERS ============ -->
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="flex flex-col lg:flex-row gap-3 lg:items-center">
+            <!-- Search -->
+            <div class="relative flex-1 min-w-[200px]">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" id="userSearchInput" placeholder="Search users by name or email..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+            </div>
+
+            <!-- Role Filter -->
+            <div class="relative">
+                <select id="roleFilter" class="w-full lg:w-44 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option value="">All Roles</option>
+                    {% for value, label in roles %}
+                        <option value="{{ label }}">{{ label|title }}</option>
+                    {% endfor %}
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="relative">
+                <select id="statusFilter" class="w-full lg:w-40 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ USERS TABLE (desktop) ============ -->
+    <div class="hidden md:block bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-bgpage sticky top-0">
+                    <tr class="text-left text-textsecondary">
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">User</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Email</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Role</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Last Login</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Created</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-bordercolor">
+                    {% for u in page_obj %}
+                        <tr class="user-row hover:bg-bgpage transition" data-name="{{ u.get_full_name|default:u.username }}" data-email="{{ u.email }}" data-role="{{ u.get_role_display }}" data-status="{% if u.is_active %}Active{% else %}Inactive{% endif %}">
+                            <td class="px-6 py-3.5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0 overflow-hidden">
+                                        {% if u.profile_image %}
+                                            <img src="{{ u.profile_image.url }}" alt="{{ u.get_full_name }}" class="w-full h-full object-cover" />
+                                        {% else %}
+                                            {{ u.first_name|slice:":1"|upper }}{{ u.last_name|slice:":1"|upper }}
+                                        {% endif %}
+                                    </div>
+                                    <span class="text-textprimary font-medium whitespace-nowrap">{{ u.get_full_name|default:u.username }}{% if u.pk == request.user.pk %} <span class="text-xs text-textsecondary">(You)</span>{% endif %}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">{{ u.email }}</td>
+                            <td class="px-6 py-3.5 whitespace-nowrap">
+                                {% if u.role == "ADMIN" %}
+                                    <span class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">Admin</span>
+                                {% elif u.role == "EDITOR" %}
+                                    <span class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">Editor</span>
+                                {% else %}
+                                    <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Reporter</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-3.5">
+                                {% if u.is_active %}
+                                    <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">Active</span>
+                                {% else %}
+                                    <span class="text-xs font-semibold text-textsecondary bg-bgpage px-2.5 py-1 rounded-full">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">{{ u.last_login|date:"M d, Y"|default:"Never" }}</td>
+                            <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">{{ u.created_at|date:"M d, Y" }}</td>
+                            <td class="px-6 py-3.5">
+                                <div class="flex items-center justify-end gap-1">
+                                    <button
+                                        class="edit-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-accent/10 hover:text-accent transition"
+                                        data-id="{{ u.pk }}"
+                                        data-fullname="{{ u.get_full_name|default:u.username }}"
+                                        data-email="{{ u.email }}"
+                                        data-role="{{ u.role }}"
+                                        data-status="{% if u.is_active %}Active{% else %}Inactive{% endif %}"
+                                        data-initials="{{ u.first_name|slice:":1"|upper }}{{ u.last_name|slice:":1"|upper }}"
+                                        aria-label="Edit user">
+                                        <i class="fa-solid fa-pen text-sm"></i>
+                                    </button>
+                                    {% if u.pk != request.user.pk %}
+                                        <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" data-id="{{ u.pk }}" data-name="{{ u.get_full_name|default:u.username }}" aria-label="Delete user">
+                                            <i class="fa-solid fa-trash text-sm"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div class="w-16 h-16 rounded-full bg-bgpage flex items-center justify-center mb-4">
+                                        <i class="fa-solid fa-users text-2xl text-textsecondary"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-textprimary">No Users Found</h3>
+                                    <p class="text-sm text-textsecondary mt-2">
+                                        Click <strong>"Add User"</strong> to create your first team member.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-bordercolor">
+                <p class="text-sm text-textsecondary">
+                    Showing <span class="font-medium text-textprimary">{{ page_obj.start_index }}–{{ page_obj.end_index }}</span> of <span class="font-medium text-textprimary">{{ page_obj.paginator.count }}</span> users
+                </p>
+                <div class="flex items-center gap-1.5">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="w-9 h-9 flex items-center justify-center rounded-xl border border-bordercolor text-textsecondary hover:bg-bgpage transition" aria-label="Previous page">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </a>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <span class="w-9 h-9 flex items-center justify-center rounded-xl bg-primary text-white text-sm font-medium">{{ num }}</span>
+                        {% else %}
+                            <a href="?page={{ num }}" class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="w-9 h-9 flex items-center justify-center rounded-xl border border-bordercolor text-textsecondary hover:bg-bgpage transition" aria-label="Next page">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- ============ USERS CARDS (mobile) ============ -->
+    <div class="md:hidden space-y-3">
+        {% for u in page_obj %}
+            <div class="user-row bg-white border border-bordercolor rounded-xl shadow-sm p-4" data-name="{{ u.get_full_name|default:u.username }}" data-email="{{ u.email }}" data-role="{{ u.get_role_display }}" data-status="{% if u.is_active %}Active{% else %}Inactive{% endif %}">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0 overflow-hidden">
+                            {% if u.profile_image %}
+                                <img src="{{ u.profile_image.url }}" alt="{{ u.get_full_name }}" class="w-full h-full object-cover" />
+                            {% else %}
+                                {{ u.first_name|slice:":1"|upper }}{{ u.last_name|slice:":1"|upper }}
+                            {% endif %}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-textprimary truncate">{{ u.get_full_name|default:u.username }}{% if u.pk == request.user.pk %} <span class="text-xs text-textsecondary">(You)</span>{% endif %}</p>
+                            <p class="text-xs text-textsecondary truncate">{{ u.email }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button
+                            class="edit-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-accent/10 hover:text-accent transition"
+                            data-id="{{ u.pk }}"
+                            data-fullname="{{ u.get_full_name|default:u.username }}"
+                            data-email="{{ u.email }}"
+                            data-role="{{ u.role }}"
+                            data-status="{% if u.is_active %}Active{% else %}Inactive{% endif %}"
+                            data-initials="{{ u.first_name|slice:":1"|upper }}{{ u.last_name|slice:":1"|upper }}"
+                            aria-label="Edit user">
+                            <i class="fa-solid fa-pen text-sm"></i>
+                        </button>
+                        {% if u.pk != request.user.pk %}
+                            <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" data-id="{{ u.pk }}" data-name="{{ u.get_full_name|default:u.username }}" aria-label="Delete user">
+                                <i class="fa-solid fa-trash text-sm"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 mt-3">
+                    {% if u.role == "ADMIN" %}
+                        <span class="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">Admin</span>
+                    {% elif u.role == "EDITOR" %}
+                        <span class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">Editor</span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Reporter</span>
+                    {% endif %}
+
+                    {% if u.is_active %}
+                        <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">Active</span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-textsecondary bg-bgpage px-2.5 py-1 rounded-full">Inactive</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-textsecondary mt-3 pt-3 border-t border-bordercolor">
+                    <span>Last login: {{ u.last_login|date:"M d, Y"|default:"Never" }}</span>
+                    <span>Joined: {{ u.created_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+        {% empty %}
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm py-16 text-center">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-bgpage flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-users text-2xl text-textsecondary"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-textprimary">No Users Found</h3>
+                    <p class="text-sm text-textsecondary mt-2">
+                        Click <strong>"Add User"</strong> to create your first team member.
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Mobile pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="flex items-center justify-between gap-3 pt-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="h-10 px-4 rounded-xl border border-bordercolor text-sm font-medium text-textsecondary hover:bg-bgpage transition">← Previous</a>
+                {% else %}
+                    <span class="h-10 px-4 rounded-xl border border-bordercolor text-sm font-medium text-textsecondary/40">← Previous</span>
+                {% endif %}
+                <span class="text-sm text-textsecondary">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="h-10 px-4 rounded-xl border border-bordercolor text-sm font-medium text-textsecondary hover:bg-bgpage transition">Next →</a>
+                {% else %}
+                    <span class="h-10 px-4 rounded-xl border border-bordercolor text-sm font-medium text-textsecondary/40">Next →</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- ============ CREATE USER MODAL ============ -->
+    <div id="createModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="createModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Add User</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="createModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form method="post" action="{% url 'UserManagementPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+
+                <div class="p-6 space-y-5">
+                    <div>
+                        <label for="createFullName" class="block text-sm font-medium text-textprimary mb-1.5">Full name</label>
+                        <input type="text" id="createFullName" name="full_name" placeholder="e.g. Priya Nair" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="createEmail" class="block text-sm font-medium text-textprimary mb-1.5">Email address</label>
+                        <input type="email" id="createEmail" name="email" placeholder="e.g. priya.nair@newsportal.com" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        <p class="text-xs text-textsecondary mt-1.5">This will also be used as their login username.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="createRole" class="block text-sm font-medium text-textprimary mb-1.5">Role</label>
+                            <div class="relative">
+                                <select id="createRole" name="role" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                    {% for value, label in roles %}
+                                        <option value="{{ value }}">{{ label|title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </span>
+                            </div>
+                            <p class="text-xs text-textsecondary mt-1.5">Admins have full access. Editors manage content. Reporters write articles only.</p>
+                        </div>
+                        <div>
+                            <label for="createStatus" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                            <div class="relative">
+                                <select id="createStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </span>
+                            </div>
+                            <p class="text-xs text-textsecondary mt-1.5">Inactive users can't log in.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="createPassword" class="block text-sm font-medium text-textprimary mb-1.5">Temporary password</label>
+                        <input type="password" id="createPassword" name="password" placeholder="Enter a temporary password" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        <p class="text-xs text-textsecondary mt-1.5">At least 8 characters. Share this with the user so they can log in and change it.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="createModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Create User </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ EDIT USER MODAL ============ -->
+    <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="editModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Edit User</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="editModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form method="post" action="{% url 'UserManagementPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="user_id" id="edit_user_id">
+
+                <div class="p-6 space-y-5">
+                    <div class="flex items-center gap-4">
+                        <div id="editAvatarInitials" class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary text-base font-semibold shrink-0">AM</div>
+                        <p class="text-xs text-textsecondary">Profile photos can be changed by the user from their own Profile page.</p>
+                    </div>
+                    <div>
+                        <label for="editFullName" class="block text-sm font-medium text-textprimary mb-1.5">Full name</label>
+                        <input type="text" id="editFullName" name="full_name" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="editEmail" class="block text-sm font-medium text-textprimary mb-1.5">Email address</label>
+                        <input type="email" id="editEmail" name="email" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="editRole" class="block text-sm font-medium text-textprimary mb-1.5">Role</label>
+                            <div class="relative">
+                                <select id="editRole" name="role" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                    {% for value, label in roles %}
+                                        <option value="{{ value }}">{{ label|title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="editStatus" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                            <div class="relative">
+                                <select id="editStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editPassword" class="block text-sm font-medium text-textprimary mb-1.5">Reset password <span class="text-textsecondary font-normal">(optional)</span></label>
+                        <input type="password" id="editPassword" name="password" placeholder="Leave blank to keep current password" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        <p class="text-xs text-textsecondary mt-1.5">Only fill this in if you want to set a new password for this user.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="editModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Save Changes </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ DELETE USER MODAL ============ -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="deleteModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-xl bg-danger/10 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                </div>
+                <h2 class="text-base font-semibold text-textprimary">Delete user?</h2>
+                <p class="text-sm text-textsecondary mt-2">
+                    Are you sure you want to delete <span class="font-medium text-textprimary" id="deleteUserName">this user</span>? They will lose access
+                    immediately and their articles will remain attributed to them. This action can be undone by an admin later.
+                </p>
+            </div>
+            <form method="post" action="{% url 'UserManagementPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="user_id" id="delete_user_id">
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="deleteModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition"> Delete User </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    // ---------- Modal open/close handling ----------
+    function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    document.getElementById("openCreateModal").addEventListener("click", () => openModal("createModal"));
+
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("edit_user_id").value = this.dataset.id;
+            document.getElementById("editFullName").value = this.dataset.fullname;
+            document.getElementById("editEmail").value = this.dataset.email;
+            document.getElementById("editRole").value = this.dataset.role;
+            document.getElementById("editStatus").value = this.dataset.status;
+            document.getElementById("editPassword").value = "";
+            document.getElementById("editAvatarInitials").textContent = this.dataset.initials;
+
+            openModal("editModal");
+        });
+    });
+
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("delete_user_id").value = this.dataset.id;
+            document.getElementById("deleteUserName").textContent = this.dataset.name;
+
+            openModal("deleteModal");
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", () => closeModal(el.getAttribute("data-close")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            ["createModal", "editModal", "deleteModal"].forEach(closeModal);
+        }
+    });
+
+    // ---------- Live search + role/status filtering (client-side) ----------
+    const searchInput = document.getElementById("userSearchInput");
+    const roleFilter = document.getElementById("roleFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    function applyFilters() {
+        const query = searchInput.value.trim().toLowerCase();
+        const role = roleFilter.value;
+        const status = statusFilter.value;
+
+        document.querySelectorAll(".user-row").forEach((row) => {
+            const name = row.dataset.name.toLowerCase();
+            const email = row.dataset.email.toLowerCase();
+            const rowRole = row.dataset.role;
+            const rowStatus = row.dataset.status;
+
+            const matchesQuery = !query || name.includes(query) || email.includes(query);
+            const matchesRole = !role || rowRole === role;
+            const matchesStatus = !status || rowStatus === status;
+
+            row.style.display = matchesQuery && matchesRole && matchesStatus ? "" : "none";
+        });
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    roleFilter.addEventListener("change", applyFilters);
+    statusFilter.addEventListener("change", applyFilters);
+</script>
+{% endblock %}

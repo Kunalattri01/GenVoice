@@ -1,0 +1,106 @@
+<!-- ============ SIDEBAR ============ -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-bordercolor flex flex-col lg:translate-x-0">
+    <!-- Logo -->
+    <div class="h-16 flex items-center gap-3 px-5 border-b border-bordercolor shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-newspaper text-white text-sm"></i>
+        </div>
+        <span class="font-semibold text-textprimary text-[15px] tracking-tight">GenVoice News</span>
+    </div>
+
+    <!-- Nav -->
+    <nav id="sidebarNav" class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+
+        <a href="{% url 'DashboardPage' %}" class="nav-link {% if request.resolver_match.url_name == 'DashboardPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-gauge w-4 text-center"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'ListArticlesPage' %}" class="nav-link {% if request.resolver_match.url_name == 'ManageArticlesPage' %}active{% endif %} {% if request.resolver_match.url_name == 'ListArticlesPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-newspaper w-4 text-center"></i>
+            <span>Articles</span> 
+        </a>
+
+        <a href="{% url 'CategoriesPage' %}" class="nav-link {% if request.resolver_match.url_name == 'CategoriesPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-folder-tree w-4 text-center"></i>
+            <span>Categories</span>
+        </a>
+
+        <a href="{% url 'TagsPage' %}" class="nav-link {% if request.resolver_match.url_name == 'TagsPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-tags w-4 text-center"></i>
+            <span>Tags</span>
+        </a>
+
+        <a href="{% url 'AuthorsPage' %}" class="nav-link {% if request.resolver_match.url_name == 'AuthorsPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-pen-nib w-4 text-center"></i>
+            <span>Authors</span>
+        </a>
+
+        <a href="{% url 'SourcesPage' %}" class="nav-link {% if request.resolver_match.url_name == 'SourcesPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-globe w-4 text-center"></i>
+            <span>Sources</span>
+        </a>
+
+        <!-- <a href="{% url 'MediaLibraryPage' %}" class="nav-link {% if request.resolver_match.url_name == 'MediaLibraryPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-photo-film w-4 text-center"></i>
+            <span>Media Library</span>
+        </a>
+
+        <a href="{% url 'APIImportPage' %}" class="nav-link {% if request.resolver_match.url_name == 'APIImportPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-arrow-right-arrow-left w-4 text-center"></i>
+            <span>API Imports</span>
+        </a>
+
+        <a href="{% url 'CommentsPage' %}" class="nav-link {% if request.resolver_match.url_name == 'CommentsPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-regular fa-comments w-4 text-center"></i>
+            <span>Comments</span>
+        </a> -->
+
+        <a href="{% url 'UserManagementPage' %}" class="nav-link {% if request.resolver_match.url_name == 'UserManagementPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-users w-4 text-center"></i>
+            <span>Users</span>
+        </a>
+
+        <!-- <a href="#" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-magnifying-glass-chart w-4 text-center"></i>
+            <span>SEO</span>
+        </a> -->
+
+        <!-- <a href="{% url 'SettingsPage' %}" class="nav-link {% if request.resolver_match.url_name == 'SettingsPage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+            <i class="fa-solid fa-gear w-4 text-center"></i>
+            <span>Settings</span>
+        </a> -->
+
+        <div class="pt-3 mt-3 border-t border-bordercolor space-y-1">
+            <!-- <a href="{% url 'MessagePage' %}" class="nav-link {% if request.resolver_match.url_name == 'MessagePage' %}active{% endif %} flex items-center justify-between px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+                <span class="flex items-center gap-3">
+                    <i class="fa-regular fa-envelope w-4 text-center"></i>
+                    <span>Messages</span>
+                </span>
+                <span class="text-[11px] font-semibold bg-accent/10 text-accent px-2 py-0.5 rounded-full">4</span>
+            </a>
+
+            <a href="{% url 'NotificationPage' %}" class="nav-link {% if request.resolver_match.url_name == 'NotificationPage' %}active{% endif %} flex items-center justify-between px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+                <span class="flex items-center gap-3">
+                    <i class="fa-regular fa-bell w-4 text-center"></i>
+                    <span>Notifications</span>
+                </span>
+                <span class="text-[11px] font-semibold bg-danger/10 text-danger px-2 py-0.5 rounded-full">9</span>
+            </a> -->
+
+            <a href="{% url 'ProfilePage' %}" class="nav-link {% if request.resolver_match.url_name == 'ProfilePage' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-textsecondary hover:bg-bgpage transition">
+                <i class="fa-regular fa-user w-4 text-center"></i>
+                <span>Profile</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <!-- Logout -->
+    <div class="p-3 border-t border-bordercolor shrink-0">
+        <a href="{% url 'DashboardLogoutPage' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-danger hover:bg-danger/5 transition">
+            <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</aside>

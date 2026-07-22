@@ -1,0 +1,299 @@
+{% extends 'admin/base/base.html' %}
+{% block title %} Comments | GenVoice News Portal {% endblock %}
+
+{% block bodyContent %}
+<main class="flex-1 p-4 sm:p-6">
+    <!-- ============ HEADER + BREADCRUMB ============ -->
+    <div class="mb-6">
+        <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+            <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span class="text-textprimary font-medium">Comments</span>
+        </nav>
+        <h1 class="text-xl font-semibold text-textprimary">Comments Management</h1>
+        <p class="text-sm text-textsecondary mt-1">Moderate reader comments across your articles</p>
+    </div>
+
+    <!-- ============ TOOLBAR: SEARCH + FILTERS ============ -->
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="flex flex-col lg:flex-row gap-3 lg:items-center">
+            <!-- Search -->
+            <div class="relative flex-1 min-w-[200px]">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" placeholder="Search comments or authors..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+            </div>
+
+            <!-- Status Filter -->
+            <div class="relative">
+                <select class="w-full lg:w-44 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Status</option>
+                    <option>Pending</option>
+                    <option>Approved</option>
+                    <option>Rejected</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
+            <!-- Article Filter -->
+            <div class="relative">
+                <select class="w-full lg:w-52 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Articles</option>
+                    <option>Markets rally as inflation cools further</option>
+                    <option>City council approves new transit plan</option>
+                    <option>Local team advances to regional finals</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ COMMENTS TABLE ============ -->
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-bgpage sticky top-0">
+                    <tr class="text-left text-textsecondary">
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Author</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Comment</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Article</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap">Created</th>
+                        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-bordercolor">
+                    <tr class="hover:bg-bgpage transition">
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0"> MJ </div>
+                                <span class="text-textprimary font-medium whitespace-nowrap">Maria James</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-sm truncate">
+                            Great breakdown of the market trends, very helpful for understanding the shift.
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-[160px] truncate whitespace-nowrap">
+                            Markets rally as inflation cools
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Pending</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">2 minutes ago</td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="approve-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-success/10 hover:text-success transition" aria-label="Approve comment">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="reject-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-warning/10 hover:text-warning transition" aria-label="Reject comment">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                                <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Delete comment">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-bgpage transition">
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0"> TL </div>
+                                <span class="text-textprimary font-medium whitespace-nowrap">Tom Lee</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-sm truncate">
+                            Disagree with this take, needs more sources to back up the claims made here.
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-[160px] truncate whitespace-nowrap">
+                            City council approves transit plan
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">Approved</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">1 hour ago</td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="approve-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary opacity-40 cursor-not-allowed" aria-label="Already approved" disabled>
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="reject-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-warning/10 hover:text-warning transition" aria-label="Reject comment">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                                <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Delete comment">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-bgpage transition">
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0"> PN </div>
+                                <span class="text-textprimary font-medium whitespace-nowrap">Priya Nair</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-sm truncate">
+                            Congrats to the team, well deserved win after such a tough season!
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-[160px] truncate whitespace-nowrap">
+                            Local team advances to finals
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">Approved</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">3 hours ago</td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="approve-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary opacity-40 cursor-not-allowed" aria-label="Already approved" disabled>
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="reject-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-warning/10 hover:text-warning transition" aria-label="Reject comment">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                                <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Delete comment">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-bgpage transition opacity-60">
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0"> GK </div>
+                                <span class="text-textprimary font-medium whitespace-nowrap">Guest User</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-sm truncate">
+                            This comment contained spam links and was rejected by the moderation team.
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-[160px] truncate whitespace-nowrap">Tech giant unveils chipset</td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full">Rejected</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">Yesterday</td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="approve-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-success/10 hover:text-success transition" aria-label="Approve comment">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="reject-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary opacity-40 cursor-not-allowed" aria-label="Already rejected" disabled>
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                                <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Delete comment">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-bgpage transition">
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold shrink-0"> DK </div>
+                                <span class="text-textprimary font-medium whitespace-nowrap">David Kim</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-sm truncate">
+                            Really appreciate the detailed coverage on this topic, kept me informed all week.
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary max-w-[160px] truncate whitespace-nowrap">
+                            New study links sleep to productivity
+                        </td>
+                        <td class="px-6 py-3.5">
+                            <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Pending</span>
+                        </td>
+                        <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">2 days ago</td>
+                        <td class="px-6 py-3.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <button class="approve-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-success/10 hover:text-success transition" aria-label="Approve comment">
+                                    <i class="fa-solid fa-check text-sm"></i>
+                                </button>
+                                <button class="reject-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-warning/10 hover:text-warning transition" aria-label="Reject comment">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                                <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" aria-label="Delete comment">
+                                    <i class="fa-solid fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ============ PAGINATION ============ -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-bordercolor">
+            <p class="text-sm text-textsecondary">
+                Showing <span class="font-medium text-textprimary">1–5</span> of
+                <span class="font-medium text-textprimary">328</span> comments
+            </p>
+            <div class="flex items-center gap-1.5">
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl border border-bordercolor text-textsecondary hover:bg-bgpage transition" aria-label="Previous page">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl bg-primary text-white text-sm font-medium">1</button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition"> 2 </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition"> 3 </button>
+                <span class="px-1 text-textsecondary">...</span>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage text-sm font-medium transition"> 33 </button>
+                <button class="w-9 h-9 flex items-center justify-center rounded-xl border border-bordercolor text-textsecondary hover:bg-bgpage transition" aria-label="Next page">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    // ---------- Approve comment ----------
+    document.querySelectorAll(".approve-btn:not(:disabled)").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const row = btn.closest("tr");
+            const statusCell = row.querySelector("td:nth-child(4) span");
+            statusCell.textContent = "Approved";
+            statusCell.className = "text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full";
+            row.classList.remove("opacity-60");
+            btn.setAttribute("disabled", true);
+            btn.classList.add("opacity-40", "cursor-not-allowed");
+            const rejectBtn = row.querySelector(".reject-btn");
+            rejectBtn.removeAttribute("disabled");
+            rejectBtn.classList.remove("opacity-40", "cursor-not-allowed");
+        });
+    });
+
+    // ---------- Reject comment ----------
+    document.querySelectorAll(".reject-btn:not(:disabled)").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const row = btn.closest("tr");
+            const statusCell = row.querySelector("td:nth-child(4) span");
+            statusCell.textContent = "Rejected";
+            statusCell.className = "text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full";
+            row.classList.add("opacity-60");
+            btn.setAttribute("disabled", true);
+            btn.classList.add("opacity-40", "cursor-not-allowed");
+            const approveBtn = row.querySelector(".approve-btn");
+            approveBtn.removeAttribute("disabled");
+            approveBtn.classList.remove("opacity-40", "cursor-not-allowed");
+        });
+    });
+
+    // ---------- Delete comment ----------
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            btn.closest("tr").remove();
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,341 @@
+{% extends 'admin/base/base.html' %} 
+
+{% block title %} Categories | GenVoice News Portal {% endblock %}
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %} 
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">Categories</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">Categories</h1>
+            <p class="text-sm text-textsecondary mt-1">Organize your articles into categories</p>
+        </div>
+        <button id="openCreateModal" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-plus text-sm"></i>
+            Add Category
+        </button>
+    </div>
+{% endblock %}
+
+
+<!-- ============ TOOLBAR: SEARCH + FILTER ============ -->
+{% block toolbar %}
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" placeholder="Search categories..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+            </div>
+
+            <div class="relative">
+                <select class="h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Status</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
+            <button class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition flex items-center gap-2 shrink-0">
+                <i class="fa-solid fa-filter text-sm"></i>
+                Filter
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block thead %}
+    <tr class="text-left text-textsecondary">
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Image</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Category</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Slug</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Article Count</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Created</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+    </tr>
+    <tr class="text-left text-textsecondary">
+        {% for row in search_indices %}
+            <th class="px-4 py-2">
+                <input type="text" placeholder="Search..." class="column-search w-full h-9 px-3 rounded-lg border border-bordercolor text-sm focus:ring-2 focus:ring-accent/40 focus:border-accent outline-none" >
+            </th>
+        {% endfor %}
+    </tr>
+{% endblock %}
+
+
+{% block tbody %}
+    {% if report_data %}
+        {% for category in report_data %}
+            <tr class="hover:bg-bgpage transition">
+                <td class="px-6 py-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                        <i class="fa-solid {{ category.icon }} {{ category.icon_color }} text-sm"></i>
+                    </div>
+                </td>
+
+                <td class="px-6 py-3.5 text-textprimary font-medium whitespace-nowrap"> {{ category.name }} </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ category.slug }} </td>
+
+                <td class="px-6 py-3.5">
+                    {% if category.is_active %}
+                        <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full"> Active </span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full"> Inactive </span>
+                    {% endif %}
+                </td>
+
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ category.display_order }} </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ category.entry_on|date:"M d, Y" }} </td>
+
+                <td class="px-6 py-3.5">
+                    <div class="flex items-center justify-end gap-1">
+                        <button
+                            class="edit-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-accent/10 hover:text-accent transition"
+                            data-id="{{ category.id }}"
+                            data-name="{{ category.name }}"
+                            data-description="{{ category.description|default_if_none:'' }}"
+                            data-category-icon="{{ category.icon|default_if_none:'' }}"
+                            data-icon-color="{{ category.icon_color }}"
+                            data-display-order="{{ category.display_order }}"
+                            data-status="{% if category.is_active %}Active{% else %}Inactive{% endif %}"
+                            aria-label="Edit Category">
+                            <i class="fa-solid fa-pen text-sm"></i>
+                        </button>
+
+                        <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" data-id="{{ category.id }}" data-name="{{ category.name }}" aria-label="Delete Category">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7" class="px-6 py-16 text-center">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-bgpage flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-folder-open text-2xl text-textsecondary"></i>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-textprimary">
+                        No Categories Found
+                    </h3>
+
+                    <p class="text-sm text-textsecondary mt-2">
+                        There are no categories available. Click
+                        <strong>"Add Category"</strong> to create your first category.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}
+
+
+{% block page_content %}
+    <!-- ============ CREATE CATEGORY MODAL ============ -->
+    <div id="createModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="createModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Add Category</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="createModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form class="p-6 space-y-5" method="post" action="{% url 'CategoriesPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+
+                <div>
+                    <label for="createName" class="block text-sm font-medium text-textprimary">Category name</label>
+                    <input type="text" id="createName" name="name" placeholder="e.g. Business" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+                <div>
+                    <label for="createDesc" class="block text-sm font-medium text-textprimary">Description</label>
+                    <textarea id="createDesc" rows="3" name="description" placeholder="Short description of this category" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                </div>
+                <div>
+                    <label for="category_icon" class="block text-sm font-medium text-textprimary">Category icon</label>
+
+                    <div class="flex flex-wrap gap-1 w-full">
+                        <i class="fa-solid fa-landmark text-danger text-sm w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center"></i>
+                        <textarea id="category_icon" rows="1" name="category_icon" placeholder="Category icon" class="w-3/4 px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label>Icon Color</label>
+                    <input type="text" name="icon_color" placeholder="text-textsecondary" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" >
+                </div>
+
+                <div>
+                    <label>Display Order</label>
+                    <input type="number" name="display_order" placeholder="0" min="0" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" >
+                </div>
+
+                <div>
+                    <label for="createStatus" class="block text-sm font-medium text-textprimary">Status</label>
+                    <div class="relative">
+                        <select id="createStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="createModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Create Category </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ EDIT CATEGORY MODAL ============ -->
+    <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="editModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Edit Category</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="editModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form class="p-6 space-y-5" method="POST" action="{% url 'CategoriesPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="category_id" id="edit_category_id">
+
+                <div>
+                    <label for="editName" class="block text-sm font-medium text-textprimary mb-1.5">Category name</label>
+                    <input type="text" id="editName" name="name" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+                <div>
+                    <label for="editDesc" class="block text-sm font-medium text-textprimary mb-1.5">Description</label>
+                    <textarea id="editDesc" name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                </div>
+                <div>
+                    <label for="editCategoryIcon" class="block text-sm font-medium text-textprimary mb-1.5">Category icon</label>
+                    <textarea id="editCategoryIcon" name="category_icon" rows="1" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                </div>
+                <div>
+                    <label for="editIconColor" class="block text-sm font-medium text-textprimary mb-1.5">Icon Color</label>
+                    <input type="text" id="editIconColor" name="icon_color" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+                <div>
+                    <label for="editDisplayOrder" class="block text-sm font-medium text-textprimary mb-1.5">Display Order</label>
+                    <input type="number" id="editDisplayOrder" name="display_order" min="0" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+                <div>
+                    <label for="editStatus" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                    <div class="relative">
+                        <select id="editStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-3 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="editModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Save Changes </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ DELETE CATEGORY MODAL ============ -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="deleteModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-md bg-danger/10 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                </div>
+                <h2 class="text-base font-semibold text-textprimary">Delete category?</h2>
+                <p class="text-sm text-textsecondary mt-2"> 
+                    Are you sure you want to delete <span class="font-medium text-textprimary" id="CategoryName">"Business"</span>? This category will be marked
+                    inactive and hidden from active use. You can restore it anytime by editing it. This action can be undone.
+                </p>
+            </div>
+            <form method="POST" action="{% url 'CategoriesPage' %}">
+                {% csrf_token %}
+
+                <input type="hidden" name="category_id" id="delete_category_id">
+                <input type="hidden" name="action" value="delete">
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-md border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" onclick="closeModal('deleteModal')"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-md bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition"> Delete Category </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    // ---------- Modal open/close handling ----------
+    function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    document.getElementById("openCreateModal").addEventListener("click", () => openModal("createModal"));
+
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("edit_category_id").value = this.dataset.id;
+            document.getElementById("editName").value = this.dataset.name;
+            document.getElementById("editDesc").value = this.dataset.description;
+            document.getElementById("editCategoryIcon").value = this.dataset.categoryIcon;
+            document.getElementById("editIconColor").value = this.dataset.iconColor;
+            document.getElementById("editDisplayOrder").value = this.dataset.displayOrder;
+            document.getElementById("editStatus").value = this.dataset.status;
+
+            openModal("editModal");
+        });
+    });
+
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            document.getElementById("delete_category_id").value = this.dataset.id;
+            document.getElementById("CategoryName").innerText = this.dataset.name;
+
+            openModal("deleteModal");
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", () => closeModal(el.getAttribute("data-close")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            ["createModal", "editModal", "deleteModal"].forEach(closeModal);
+        }
+    });
+</script>
+{% endblock %}

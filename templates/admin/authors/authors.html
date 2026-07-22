@@ -1,0 +1,340 @@
+{% extends 'admin/base/base.html' %} 
+
+{% block title %} Authors | GenVoice News Portal {% endblock %}
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %} 
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">Authors</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">Authors</h1>
+            <p class="text-sm text-textsecondary mt-1">Manage bylines and author profiles</p>
+        </div>
+        <button id="openCreateModal" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-plus text-sm"></i>
+            Add Author
+        </button>
+    </div>
+{% endblock %}
+
+
+<!-- ============ TOOLBAR: SEARCH ============ -->
+{% block toolbar %}
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="relative max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </span>
+            <input type="text" placeholder="Search authors..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block thead %}
+    <tr class="text-left text-textsecondary">
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Avatar</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Name</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Designation</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Article Count</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Joined</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+    </tr>
+{% endblock %}
+
+
+{% block tbody %}
+    {% if report_data %}
+        {% for author in report_data %}
+            <tr class="hover:bg-bgpage transition">
+                <td class="px-6 py-3.5">
+                    <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden shrink-0">
+                        {% if author.avatar %}
+                            <img src="{{ author.avatar.url }}" alt="{{ author.name }}" class="w-full h-full object-cover" />
+                        {% else %}
+                            <i class="fa-solid fa-user text-accent text-sm"></i>
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="px-6 py-3.5 text-textprimary font-medium whitespace-nowrap"> {{ author.name }} </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ author.designation|default:"—" }} </td>
+                <td class="px-6 py-3.5">
+                    {% if author.is_active %}
+                        <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full"> Active </span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full"> Inactive </span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ author.articles.count|default:"0" }} </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap"> {{ author.entry_on|date:"M d, Y" }} </td>
+                <td class="px-6 py-3.5">
+                    <div class="flex items-center justify-end gap-1">
+                        <button
+                            class="edit-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-accent/10 hover:text-accent transition"
+                            data-id="{{ author.id }}"
+                            data-name="{{ author.name }}"
+                            data-designation="{{ author.designation|default_if_none:'' }}"
+                            data-bio="{{ author.bio|default_if_none:'' }}"
+                            data-twitter-url="{{ author.twitter_url|default_if_none:'' }}"
+                            data-facebook-url="{{ author.facebook_url|default_if_none:'' }}"
+                            data-linkedin-url="{{ author.linkedin_url|default_if_none:'' }}"
+                            data-status="{% if author.is_active %}Active{% else %}Inactive{% endif %}"
+                            aria-label="Edit Author">
+                            <i class="fa-solid fa-pen text-sm"></i>
+                        </button>
+
+                        <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" data-id="{{ author.id }}" data-name="{{ author.name }}" aria-label="Delete Author">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7" class="px-6 py-16 text-center">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-bgpage flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-pen-nib text-2xl text-textsecondary"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-textprimary">
+                        No Authors Found
+                    </h3>
+                    <p class="text-sm text-textsecondary mt-2">
+                        There are no authors available. Click
+                        <strong>"Add Author"</strong> to create your first author.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}
+
+
+{% block page_content %}
+    <!-- ============ CREATE AUTHOR MODAL ============ -->
+    <div id="createModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="createModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Add Author</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="createModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form class="p-6 space-y-5" method="post" action="{% url 'AuthorsPage' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+
+                <div>
+                    <label for="createName" class="block text-sm font-medium text-textprimary">Author name</label>
+                    <input type="text" id="createName" name="name" placeholder="e.g. Sara Ahmed" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="createDesignation" class="block text-sm font-medium text-textprimary">Designation</label>
+                    <input type="text" id="createDesignation" name="designation" placeholder="e.g. Senior Correspondent" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="createAvatar" class="block text-sm font-medium text-textprimary">Avatar</label>
+                    <input type="file" id="createAvatar" name="avatar" accept="image/*" class="w-full text-sm text-textprimary file:mr-4 file:h-11 file:px-4 file:rounded-xl file:border-0 file:bg-bgpage file:text-textprimary file:text-sm file:font-medium hover:file:bg-bordercolor/40 transition" />
+                </div>
+
+                <div>
+                    <label for="createBio" class="block text-sm font-medium text-textprimary">Bio</label>
+                    <textarea id="createBio" rows="3" name="bio" placeholder="Short author bio" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label>Twitter URL</label>
+                    <input type="url" name="twitter_url" placeholder="https://twitter.com/username" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" >
+                </div>
+
+                <div>
+                    <label>Facebook URL</label>
+                    <input type="url" name="facebook_url" placeholder="https://facebook.com/username" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" >
+                </div>
+
+                <div>
+                    <label>LinkedIn URL</label>
+                    <input type="url" name="linkedin_url" placeholder="https://linkedin.com/in/username" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" >
+                </div>
+
+                <div>
+                    <label for="createStatus" class="block text-sm font-medium text-textprimary">Status</label>
+                    <div class="relative">
+                        <select id="createStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="createModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Create Author </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ EDIT AUTHOR MODAL ============ -->
+    <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="editModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-bordercolor">
+                <h2 class="text-base font-semibold text-textprimary">Edit Author</h2>
+                <button class="w-8 h-8 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage transition" data-close="editModal" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form class="p-6 space-y-5" method="POST" action="{% url 'AuthorsPage' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="author_id" id="edit_author_id">
+
+                <div>
+                    <label for="editName" class="block text-sm font-medium text-textprimary mb-1.5">Author name</label>
+                    <input type="text" id="editName" name="name" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="editDesignation" class="block text-sm font-medium text-textprimary mb-1.5">Designation</label>
+                    <input type="text" id="editDesignation" name="designation" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="editAvatar" class="block text-sm font-medium text-textprimary mb-1.5">Avatar</label>
+                    <input type="file" id="editAvatar" name="avatar" accept="image/*" class="w-full text-sm text-textprimary file:mr-4 file:h-11 file:px-4 file:rounded-xl file:border-0 file:bg-bgpage file:text-textprimary file:text-sm file:font-medium hover:file:bg-bordercolor/40 transition" />
+                    <p class="text-xs text-textsecondary mt-1.5">Leave empty to keep the current avatar</p>
+                </div>
+
+                <div>
+                    <label for="editBio" class="block text-sm font-medium text-textprimary mb-1.5">Bio</label>
+                    <textarea id="editBio" name="bio" rows="3" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label for="editTwitterUrl" class="block text-sm font-medium text-textprimary mb-1.5">Twitter URL</label>
+                    <input type="url" id="editTwitterUrl" name="twitter_url" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="editFacebookUrl" class="block text-sm font-medium text-textprimary mb-1.5">Facebook URL</label>
+                    <input type="url" id="editFacebookUrl" name="facebook_url" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="editLinkedinUrl" class="block text-sm font-medium text-textprimary mb-1.5">LinkedIn URL</label>
+                    <input type="url" id="editLinkedinUrl" name="linkedin_url" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                </div>
+
+                <div>
+                    <label for="editStatus" class="block text-sm font-medium text-textprimary mb-1.5">Status</label>
+                    <div class="relative">
+                        <select id="editStatus" name="status" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-xl border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" data-close="editModal"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition"> Save Changes </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============ DELETE AUTHOR MODAL ============ -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="deleteModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-md bg-danger/10 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                </div>
+                <h2 class="text-base font-semibold text-textprimary">Delete author?</h2>
+                <p class="text-sm text-textsecondary mt-2"> 
+                    Are you sure you want to delete <span class="font-medium text-textprimary" id="AuthorName">"Author"</span>? This author will be marked
+                    inactive and hidden from active use. You can restore it anytime by editing it. This action can be undone.
+                </p>
+            </div>
+            <form method="POST" action="{% url 'AuthorsPage' %}">
+                {% csrf_token %}
+
+                <input type="hidden" name="author_id" id="delete_author_id">
+                <input type="hidden" name="action" value="delete">
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-md border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" onclick="closeModal('deleteModal')"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-md bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition"> Delete Author </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    document.getElementById("openCreateModal").addEventListener("click", () => openModal("createModal"));
+
+    document.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("edit_author_id").value = this.dataset.id;
+            document.getElementById("editName").value = this.dataset.name;
+            document.getElementById("editDesignation").value = this.dataset.designation;
+            document.getElementById("editBio").value = this.dataset.bio;
+            document.getElementById("editTwitterUrl").value = this.dataset.twitterUrl;
+            document.getElementById("editFacebookUrl").value = this.dataset.facebookUrl;
+            document.getElementById("editLinkedinUrl").value = this.dataset.linkedinUrl;
+            document.getElementById("editStatus").value = this.dataset.status;
+
+            openModal("editModal");
+        });
+    });
+
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("delete_author_id").value = this.dataset.id;
+            document.getElementById("AuthorName").innerText = this.dataset.name;
+
+            openModal("deleteModal");
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", () => closeModal(el.getAttribute("data-close")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            ["createModal", "editModal", "deleteModal"].forEach(closeModal);
+        }
+    });
+</script>
+{% endblock %}

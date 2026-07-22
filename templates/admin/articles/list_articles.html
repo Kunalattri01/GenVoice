@@ -1,0 +1,230 @@
+{% extends 'admin/base/base.html' %}
+
+{% block title %} Article List | GenVoice News Portal {% endblock %}
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">News Articles</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">News Articles</h1>
+            <p class="text-sm text-textsecondary mt-1">Manage and publish articles across your portal</p>
+        </div>
+        <a href="{% url 'ManageArticlesPage' %}" class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-plus text-sm"></i>
+            Add Article
+        </a>
+    </div>
+{% endblock %}
+
+
+<!-- ============ TOOLBAR: SEARCH + FILTERS ============ -->
+{% block toolbar %}
+    <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-4 sm:p-5 mb-6">
+        <div class="flex flex-col lg:flex-row gap-3 lg:items-center">
+            <!-- Search -->
+            <div class="relative flex-1 min-w-[200px]">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
+                <input type="text" placeholder="Search articles..." class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+            </div>
+
+            <!-- Category Filter -->
+            <div class="relative">
+                <select class="w-full lg:w-44 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="relative">
+                <select class="w-full lg:w-40 h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                    <option>All Status</option>
+                    {% for value, label in statuses %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                    <i class="fa-regular fa-calendar text-sm"></i>
+                </span>
+                <input type="date" class="w-full lg:w-44 h-11 pl-10 pr-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block thead %}
+    <tr class="text-left text-textsecondary">
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Image</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Title</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Category</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Author</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Status</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Views</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap">Published Date</th>
+        <th class="px-6 py-3 font-medium whitespace-nowrap text-right">Actions</th>
+    </tr>
+{% endblock %}
+
+
+{% block tbody %}
+    {% if report_data %}
+        {% for article in report_data %}
+            <tr class="hover:bg-bgpage transition">
+                <td class="px-6 py-3.5">
+                    <div class="w-14 h-10 rounded-lg bg-accent/10 flex items-center justify-center overflow-hidden shrink-0">
+                        {% if article.featured_image %}
+                            <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="w-full h-full object-cover" />
+                        {% else %}
+                            <i class="fa-solid fa-newspaper text-accent text-sm"></i>
+                        {% endif %}
+                    </div>
+                </td>
+                <td class="px-6 py-3.5 text-textprimary font-medium max-w-xs truncate">{{ article.title }}</td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">
+                    <span class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">{{ article.category.name }}</span>
+                </td>
+                <td class="px-6 py-3.5 whitespace-nowrap">
+                    {% with author=article.authors.first %}
+                        {% if author %}
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[10px] font-semibold shrink-0"> {{ author.name|slice:":2"|upper }} </div>
+                                <span class="text-textsecondary">{{ author.name }}</span>
+                            </div>
+                        {% else %}
+                            <span class="text-textsecondary">—</span>
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td class="px-6 py-3.5">
+                    {% if article.status == "published" %}
+                        <span class="text-xs font-semibold text-success bg-success/10 px-2.5 py-1 rounded-full">Published</span>
+                    {% elif article.status == "draft" %}
+                        <span class="text-xs font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded-full">Draft</span>
+                    {% elif article.status == "pending_review" %}
+                        <span class="text-xs font-semibold text-danger bg-danger/10 px-2.5 py-1 rounded-full">Pending Review</span>
+                    {% elif article.status == "scheduled" %}
+                        <span class="text-xs font-semibold text-accent bg-accent/10 px-2.5 py-1 rounded-full">Scheduled</span>
+                    {% else %}
+                        <span class="text-xs font-semibold text-textsecondary bg-bgpage px-2.5 py-1 rounded-full">Archived</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">{{ article.view_count }}</td>
+                <td class="px-6 py-3.5 text-textsecondary whitespace-nowrap">
+                    {% if article.publish_date %}{{ article.publish_date|date:"M d, Y" }}{% else %}Not published{% endif %}
+                </td>
+                <td class="px-6 py-3.5">
+                    <div class="flex items-center justify-end gap-1">
+                        <button class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-bgpage hover:text-textprimary transition" aria-label="View article">
+                            <i class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                        <a href="{% url 'ManageArticlesPage' %}?article_id={{ article.id }}" class="w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-accent/10 hover:text-accent transition" aria-label="Edit article">
+                            <i class="fa-solid fa-pen text-sm"></i>
+                        </a>
+                        <button class="delete-btn w-9 h-9 flex items-center justify-center rounded-xl text-textsecondary hover:bg-danger/10 hover:text-danger transition" data-id="{{ article.id }}" data-title="{{ article.title }}" aria-label="Delete article">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="8" class="px-6 py-16 text-center">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-bgpage flex items-center justify-center mb-4">
+                        <i class="fa-solid fa-newspaper text-2xl text-textsecondary"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-textprimary">No Articles Found</h3>
+                    <p class="text-sm text-textsecondary mt-2">
+                        There are no articles available. Click
+                        <strong>"Add Article"</strong> to create your first article.
+                    </p>
+                </div>
+            </td>
+        </tr>
+    {% endif %}
+{% endblock %}
+
+
+{% block page_content %}
+    <!-- ============ DELETE ARTICLE MODAL ============ -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/30 modal-overlay" data-close="deleteModal"></div>
+        <div class="relative bg-white rounded-xl shadow-sm border border-bordercolor w-full max-w-md">
+            <div class="p-6">
+                <div class="w-12 h-12 rounded-md bg-danger/10 flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                </div>
+                <h2 class="text-base font-semibold text-textprimary">Delete article?</h2>
+                <p class="text-sm text-textsecondary mt-2">
+                    Are you sure you want to delete <span class="font-medium text-textprimary" id="ArticleTitle">this article</span>? It will be marked
+                    inactive and hidden from the site. You can restore it anytime. This action can be undone.
+                </p>
+            </div>
+            <form method="POST" action="{% url 'ListArticlesPage' %}">
+                {% csrf_token %}
+                <input type="hidden" name="article_id" id="delete_article_id">
+                <input type="hidden" name="action" value="delete">
+
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-bordercolor">
+                    <button type="button" class="h-11 px-4 rounded-md border border-accent text-accent text-sm font-semibold hover:bg-accent/5 active:bg-accent/10 transition" onclick="closeModal('deleteModal')"> Cancel </button>
+                    <button type="submit" class="h-11 px-4 rounded-md bg-danger text-white text-sm font-semibold hover:bg-danger/90 active:bg-danger/80 transition"> Delete Article </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extraJs %}
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            document.getElementById("delete_article_id").value = this.dataset.id;
+            document.getElementById("ArticleTitle").innerText = this.dataset.title;
+
+            openModal("deleteModal");
+        });
+    });
+
+    document.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", () => closeModal(el.getAttribute("data-close")));
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeModal("deleteModal");
+        }
+    });
+</script>
+{% endblock %}

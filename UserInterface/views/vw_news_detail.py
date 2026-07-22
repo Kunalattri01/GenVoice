@@ -1,89 +1,95 @@
-import logging
-from urllib.parse import unquote
-
 from django.http import Http404
 from django.shortcuts import render
 from django.views import View
-from django.views.generic import TemplateView
 
-from UserInterface.utils.news_detail import (
-    fetch_article_by_uri,
-    get_related_articles,
-    get_latest_articles,
-    get_trending_articles,
-    get_prev_next_articles,
-    estimate_reading_time,
-)
+from articles.models import Article
 
-logger = logging.getLogger(__name__)
 
 class NewsDetailView(View):
     """
-    Renders a full detail page for a single Event Registry article.
+    Renders the full detail page for a single Article.
 
-    URL:     /news/<encoded_uri>/
-    Example: /news/eng-9284712/
-
-    No database is used — the article, and every sidebar/related-articles
-    list, is fetched live from Event Registry on each request.
+    URL:     /news/<slug>/
+    Example: /news/markets-rally-inflation-cools/
     """
     template_name = "UserInterface/news_detail.html"
 
-    def get(self, request, encoded_uri, *args, **kwargs):
-        # print("Encoded URI:", encoded_uri)
-
-        article_uri = unquote(encoded_uri)
-        # print("Decoded URI:", article_uri)
-
-        article = fetch_article_by_uri(article_uri)
-        # print("Article:", article)
+    def get(self, request, slug, *args, **kwargs):
+        article = (
+            Article.objects.select_related("category", "source")
+            .prefetch_related("authors", "tags", "gallery_images", "related_articles")
+            .filter(slug=slug, status=Article.Status.PUBLISHED, is_active=True)
+            .first()
+        )
 
         if not article:
             raise Http404("This article could not be found or is no longer available.")
+
+        # Lightweight view count increment (avoids re-running save() side effects)
+        Article.objects.filter(pk=article.pk).update(view_count=article.view_count + 1)
 
         context = self._build_context(article, request)
         return render(request, self.template_name, context)
 
     def _build_context(self, article, request):
-        source = article.get("source") or {}
-        categories = article.get("categories") or []
-        concepts = article.get("concepts") or []
-        location = article.get("location") or {}
-        image = article.get("image")
-        media = article.get("media") or []
-        sentiment = article.get("sentiment")
-        body = article.get("body") or ""
-
-        # Build a small image gallery from the main image + any media items
         gallery = []
-        if image:
-            gallery.append(image)
-        for m in media:
-            m_url = m.get("url") if isinstance(m, dict) else m
-            if m_url and m_url not in gallery:
-                gallery.append(m_url)
+        if article.featured_image:
+            gallery.append(article.featured_image.url)
+        for img in article.gallery_images.all():
+            gallery.append(img.image.url)
 
-        primary_category = categories[0] if categories else None
+        related_articles = list(
+            article.related_articles.filter(status=Article.Status.PUBLISHED, is_active=True)[:4]
+        )
+        if not related_articles:
+            related_articles = list(
+                Article.objects.filter(
+                    category=article.category, status=Article.Status.PUBLISHED, is_active=True
+                )
+                .exclude(pk=article.pk)
+                .order_by("-publish_date")[:4]
+            )
 
-        related_articles = get_related_articles(article, count=4)
-        latest_articles = get_latest_articles(exclude_uri=article.get("uri"), count=5)
-        trending_articles = get_trending_articles(exclude_uri=article.get("uri"), count=5)
-        prev_article, next_article = get_prev_next_articles(article)
+        latest_articles = (
+            Article.objects.filter(status=Article.Status.PUBLISHED, is_active=True)
+            .exclude(pk=article.pk)
+            .order_by("-publish_date")[:5]
+        )
 
-        popular_tags = list({c.get("label", {}).get("eng") for c in concepts if c.get("label")})[:12]
+        trending_articles = (
+            Article.objects.filter(
+                status=Article.Status.PUBLISHED, is_active=True, is_trending=True
+            )
+            .exclude(pk=article.pk)
+            .order_by("-publish_date")[:5]
+        )
 
+        prev_article = (
+            Article.objects.filter(
+                status=Article.Status.PUBLISHED, is_active=True, publish_date__lt=article.publish_date
+            )
+            .order_by("-publish_date")
+            .first()
+        )
+
+        next_article = (
+            Article.objects.filter(
+                status=Article.Status.PUBLISHED, is_active=True, publish_date__gt=article.publish_date
+            )
+            .order_by("publish_date")
+            .first()
+        )
+
+        popular_tags = [tag.name for tag in article.tags.all()][:12]
         current_url = request.build_absolute_uri()
 
         return {
             "article": article,
-            "source": source,
-            "categories": categories,
-            "primary_category": primary_category,
-            "concepts": concepts,
-            "location": location,
+            "source": article.source,
+            "primary_category": article.category,
+            "categories": [article.category] if article.category else [],
             "gallery": gallery,
-            "sentiment": sentiment,
-            "reading_time": estimate_reading_time(body),
+            "reading_time": article.reading_time,
             "related_articles": related_articles,
             "latest_articles": latest_articles,
             "trending_articles": trending_articles,
@@ -95,8 +101,4 @@ class NewsDetailView(View):
 
 
 def news_404_view(request, exception=None):
-    """
-    Custom 404 handler. Wire this up in your root urls.py:
-        handler404 = "news.views.news_404_view"
-    """
     return render(request, "404.html", status=404)

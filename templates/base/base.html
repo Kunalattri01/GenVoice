@@ -5,7 +5,13 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <meta name="google-adsense-account" content="ca-pub-5777518478263219">
-    <title>GenVoice Network</title>
+    <title>{% block title %} Gen Voice {% endblock %}</title>
+
+    <!-- SEO -->
+    <meta name="description" content="{% block meta_description %}Latest breaking news, technology, business, sports, entertainment and world updates from Gen Voice.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}news, breaking news, technology, business, sports, entertainment, india, world news{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+
     <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/loader.css' %}">

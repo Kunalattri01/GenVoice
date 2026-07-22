@@ -3,5 +3,5 @@ from .views import *
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='HomePage'),
-    path("news/<str:encoded_uri>/", NewsDetailView.as_view(), name="news_detail"),
+    path( "news/<slug:slug>/", NewsDetailView.as_view(), name="news_detail"),
 ]

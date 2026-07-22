@@ -1,0 +1,22 @@
+body { font-family: 'Inter', sans-serif; }
+
+/* Sidebar slide behavior on mobile */
+#sidebar {
+    transition: transform 0.2s ease;
+}
+
+@media (max-width: 1023px) {
+    #sidebar {
+        transform: translateX(-100%);
+    }
+    #sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+}
+
+/* Scrollbar for sidebar nav */
+#sidebarNav::-webkit-scrollbar { width: 5px; }
+#sidebarNav::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 10px; }
+
+.nav-link.active { background-color: #EFF3FF; color: #0A1E5E; font-weight: 600; }
+.nav-link.active i { color: #2563EB; }

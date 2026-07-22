@@ -1,0 +1,262 @@
+{% extends 'admin/base/base.html' %}
+{% block title %} Settings | GenVoice News Portal {% endblock %} 
+
+<!-- ============ HEADER + BREADCRUMB ============ -->
+{% block bread_crumb %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-textsecondary mb-1">
+                <a href="{% url 'DashboardPage' %}" class="hover:text-textprimary transition">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-textprimary font-medium">Settings</span>
+            </nav>
+            <h1 class="text-xl font-semibold text-textprimary">Settings</h1>
+            <p class="text-sm text-textsecondary mt-1">Configure global settings for your news portal</p>
+        </div>
+        <button class="h-11 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2 shrink-0">
+            <i class="fa-regular fa-floppy-disk text-sm"></i>
+            Save Changes
+        </button>
+    </div>
+{% endblock %}
+
+
+{% block page_content %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- ============ LEFT COLUMN ============ -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Website Information -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-globe text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">Website Information</h2>
+                </div>
+                <form class="space-y-5" novalidate>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="siteName" class="block text-sm font-medium text-textprimary mb-1.5">Site name</label>
+                            <input type="text" id="siteName" value="News Portal" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                        <div>
+                            <label for="siteUrl" class="block text-sm font-medium text-textprimary mb-1.5">Site URL</label>
+                            <input type="url" id="siteUrl" value="https://newsportal.com" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                    </div>
+                    <div>
+                        <label for="siteTagline" class="block text-sm font-medium text-textprimary mb-1.5">Tagline</label>
+                        <input type="text" id="siteTagline" value="Trusted news, delivered fast" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="siteDescription" class="block text-sm font-medium text-textprimary mb-1.5">Description</label>
+                        <textarea id="siteDescription" rows="3" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none">A modern news portal covering business, politics, sports, and technology.</textarea>
+                    </div>
+
+                    <!-- Logo & Favicon Upload -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                        <div>
+                            <label class="block text-sm font-medium text-textprimary mb-1.5">Site logo</label>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-newspaper text-primary"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-center h-16 rounded-xl border border-dashed border-bordercolor text-center cursor-pointer hover:bg-bgpage transition">
+                                        <p class="text-xs text-textsecondary px-2">Click to upload logo</p>
+                                    </div>
+                                    <input type="file" class="hidden" accept="image/*" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-textprimary mb-1.5">Favicon</label>
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                                    <i class="fa-regular fa-star text-accent"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-center h-16 rounded-xl border border-dashed border-bordercolor text-center cursor-pointer hover:bg-bgpage transition">
+                                        <p class="text-xs text-textsecondary px-2">Click to upload favicon</p>
+                                    </div>
+                                    <input type="file" class="hidden" accept="image/*" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SMTP Settings -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-envelope-open-text text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">SMTP Settings</h2>
+                </div>
+                <form class="space-y-5" novalidate>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="smtpHost" class="block text-sm font-medium text-textprimary mb-1.5">SMTP host</label>
+                            <input type="text" id="smtpHost" placeholder="smtp.mailserver.com" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                        <div>
+                            <label for="smtpPort" class="block text-sm font-medium text-textprimary mb-1.5">SMTP port</label>
+                            <input type="text" id="smtpPort" placeholder="587" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="smtpUsername" class="block text-sm font-medium text-textprimary mb-1.5">Username</label>
+                            <input type="text" id="smtpUsername" placeholder="noreply@newsportal.com" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                        <div>
+                            <label for="smtpPassword" class="block text-sm font-medium text-textprimary mb-1.5">Password</label>
+                            <input type="password" id="smtpPassword" placeholder="Enter SMTP password" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                        </div>
+                    </div>
+                    <div>
+                        <label for="smtpEncryption" class="block text-sm font-medium text-textprimary mb-1.5">Encryption</label>
+                        <div class="relative max-w-xs">
+                            <select id="smtpEncryption" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                <option>TLS</option>
+                                <option>SSL</option>
+                                <option>None</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Social Links -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-share-nodes text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">Social Links</h2>
+                </div>
+                <form class="space-y-4" novalidate>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-brands fa-facebook text-sm"></i>
+                        </span>
+                        <input type="url" placeholder="https://facebook.com/newsportal" class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-brands fa-x-twitter text-sm"></i>
+                        </span>
+                        <input type="url" placeholder="https://x.com/newsportal" class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </span>
+                        <input type="url" placeholder="https://instagram.com/newsportal" class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-brands fa-linkedin text-sm"></i>
+                        </span>
+                        <input type="url" placeholder="https://linkedin.com/company/newsportal" class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-textsecondary">
+                            <i class="fa-brands fa-youtube text-sm"></i>
+                        </span>
+                        <input type="url" placeholder="https://youtube.com/@newsportal" class="w-full h-11 pl-10 pr-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ============ RIGHT COLUMN ============ -->
+        <div class="space-y-6">
+            <!-- SEO Defaults -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-magnifying-glass-chart text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">SEO Defaults</h2>
+                </div>
+                <form class="space-y-5" novalidate>
+                    <div>
+                        <label for="defaultSeoTitle" class="block text-sm font-medium text-textprimary mb-1.5">Default meta title</label>
+                        <input type="text" id="defaultSeoTitle" placeholder="News Portal — Latest Headlines" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="defaultSeoDescription" class="block text-sm font-medium text-textprimary mb-1.5">Default meta description</label>
+                        <textarea id="defaultSeoDescription" rows="3" placeholder="Default description used when a page has none set" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label for="defaultSeoKeywords" class="block text-sm font-medium text-textprimary mb-1.5">Default keywords</label>
+                        <input type="text" id="defaultSeoKeywords" placeholder="news, breaking news, headlines" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="robotsTxt" class="block text-sm font-medium text-textprimary mb-1.5">Robots indexing</label>
+                        <div class="relative">
+                            <select id="robotsTxt" class="w-full h-11 pl-4 pr-9 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent appearance-none cursor-pointer">
+                                <option>Index, Follow</option>
+                                <option>Noindex, Follow</option>
+                                <option>Noindex, Nofollow</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-textsecondary pointer-events-none">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Analytics Settings -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-chart-line text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">Analytics Settings</h2>
+                </div>
+                <form class="space-y-5" novalidate>
+                    <div>
+                        <label for="gaId" class="block text-sm font-medium text-textprimary mb-1.5">Google Analytics ID</label>
+                        <input type="text" id="gaId" placeholder="G-XXXXXXXXXX" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="gtmId" class="block text-sm font-medium text-textprimary mb-1.5">Google Tag Manager ID</label>
+                        <input type="text" id="gtmId" placeholder="GTM-XXXXXXX" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="fbPixelId" class="block text-sm font-medium text-textprimary mb-1.5">Meta Pixel ID</label>
+                        <input type="text" id="fbPixelId" placeholder="XXXXXXXXXXXXXXX" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary placeholder:text-textsecondary/70 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                </form>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="bg-white border border-bordercolor rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <i class="fa-solid fa-address-card text-accent"></i>
+                    <h2 class="text-sm font-semibold text-textprimary">Contact Information</h2>
+                </div>
+                <form class="space-y-5" novalidate>
+                    <div>
+                        <label for="contactEmail" class="block text-sm font-medium text-textprimary mb-1.5">Contact email</label>
+                        <input type="email" id="contactEmail" value="contact@newsportal.com" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="contactPhone" class="block text-sm font-medium text-textprimary mb-1.5">Contact phone</label>
+                        <input type="tel" id="contactPhone" value="+1 (555) 010-2200" class="w-full h-11 px-4 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition" />
+                    </div>
+                    <div>
+                        <label for="contactAddress" class="block text-sm font-medium text-textprimary mb-1.5">Office address</label>
+                        <textarea id="contactAddress" rows="3" class="w-full px-4 py-3 rounded-xl border border-bordercolor bg-white text-sm text-textprimary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition resize-none">421 Market Street, Suite 900, San Francisco, CA 94105</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Save Button -->
+    <div class="flex justify-end mt-6">
+        <button class="h-11 px-6 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 active:bg-primary/80 transition flex items-center gap-2">
+            <i class="fa-regular fa-floppy-disk text-sm"></i>
+            Save Changes
+        </button>
+    </div>
+{% endblock %}

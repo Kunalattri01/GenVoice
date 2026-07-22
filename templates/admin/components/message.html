@@ -1,0 +1,139 @@
+{% if messages %}
+<div id="toastContainer" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 w-full max-w-sm px-4 sm:px-0 pointer-events-none">
+    {% for message in messages %} 
+        {% if message.tags == 'success' %} 
+            {% with icon="fa-solid fa-circle-check" color="success" label="Success" %}
+                <div class="toast-item pointer-events-auto relative bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden" role="alert">
+                    <div class="flex items-start gap-3 p-4 pl-3.5">
+                        <span class="absolute left-0 top-0 bottom-0 w-1 bg-{{ color }}"></span>
+                        <div class="w-9 h-9 rounded-xl bg-{{ color }}/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="{{ icon }} text-{{ color }} text-sm"></i>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-0.5">
+                            <p class="text-xs font-semibold text-{{ color }} uppercase tracking-wide">{{ label }}</p>
+                            <p class="text-sm text-textprimary mt-0.5 leading-snug">{{ message }}</p>
+                        </div>
+                        <button type="button" class="toast-close w-7 h-7 flex items-center justify-center rounded-lg text-textsecondary hover:bg-bgpage hover:text-textprimary transition shrink-0" aria-label="Dismiss notification">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="h-0.5 bg-bordercolor">
+                        <div class="toast-progress-bar h-full bg-{{ color }}"></div>
+                    </div>
+                </div>
+            {% endwith %}
+            
+        {% elif message.tags == 'warning' %}
+            {% with icon="fa-solid fa-triangle-exclamation" color="warning" label="Notice" %}
+                <div class="toast-item pointer-events-auto relative bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden" role="alert">
+                    <div class="flex items-start gap-3 p-4 pl-3.5">
+                        <span class="absolute left-0 top-0 bottom-0 w-1 bg-{{ color }}"></span>
+                        <div class="w-9 h-9 rounded-xl bg-{{ color }}/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="{{ icon }} text-{{ color }} text-sm"></i>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-0.5">
+                            <p class="text-xs font-semibold text-{{ color }} uppercase tracking-wide">{{ label }}</p>
+                            <p class="text-sm text-textprimary mt-0.5 leading-snug">{{ message }}</p>
+                        </div>
+                        <button type="button" class="toast-close w-7 h-7 flex items-center justify-center rounded-lg text-textsecondary hover:bg-bgpage hover:text-textprimary transition shrink-0" aria-label="Dismiss notification">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="h-0.5 bg-bordercolor">
+                        <div class="toast-progress-bar h-full bg-{{ color }}"></div>
+                    </div>
+                </div>
+            {% endwith %}
+            
+        {% elif message.tags == 'error' %}
+            {% with icon="fa-solid fa-circle-exclamation" color="danger" label="Error" %}
+                <div class="toast-item pointer-events-auto relative bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden" role="alert">
+                    <div class="flex items-start gap-3 p-4 pl-3.5">
+                        <span class="absolute left-0 top-0 bottom-0 w-1 bg-{{ color }}"></span>
+                        <div class="w-9 h-9 rounded-xl bg-{{ color }}/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="{{ icon }} text-{{ color }} text-sm"></i>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-0.5">
+                            <p class="text-xs font-semibold text-{{ color }} uppercase tracking-wide">{{ label }}</p>
+                            <p class="text-sm text-textprimary mt-0.5 leading-snug">{{ message }}</p>
+                        </div>
+                        <button type="button" class="toast-close w-7 h-7 flex items-center justify-center rounded-lg text-textsecondary hover:bg-bgpage hover:text-textprimary transition shrink-0" aria-label="Dismiss notification">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="h-0.5 bg-bordercolor">
+                        <div class="toast-progress-bar h-full bg-{{ color }}"></div>
+                    </div>
+                </div>
+            {% endwith %} 
+        {% else %}
+            {% with icon="fa-solid fa-circle-info" color="accent" label="Info" %}
+                <div class="toast-item pointer-events-auto relative bg-white border border-bordercolor rounded-xl shadow-sm overflow-hidden" role="alert">
+                    <div class="flex items-start gap-3 p-4 pl-3.5">
+                        <span class="absolute left-0 top-0 bottom-0 w-1 bg-{{ color }}"></span>
+                        <div class="w-9 h-9 rounded-xl bg-{{ color }}/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="{{ icon }} text-{{ color }} text-sm"></i>
+                        </div>
+                        <div class="flex-1 min-w-0 pt-0.5">
+                            <p class="text-xs font-semibold text-{{ color }} uppercase tracking-wide">{{ label }}</p>
+                            <p class="text-sm text-textprimary mt-0.5 leading-snug">{{ message }}</p>
+                        </div>
+                        <button type="button" class="toast-close w-7 h-7 flex items-center justify-center rounded-lg text-textsecondary hover:bg-bgpage hover:text-textprimary transition shrink-0" aria-label="Dismiss notification">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="h-0.5 bg-bordercolor">
+                        <div class="toast-progress-bar h-full bg-{{ color }}"></div>
+                    </div>
+                </div>
+            {% endwith %} 
+        {% endif %}
+    {% endfor %}
+</div>
+
+<style>
+    @keyframes toastSlideIn {
+        from {
+            opacity: 0;
+            transform: translateX(24px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    @keyframes toastProgress {
+        from {
+            width: 100%;
+        }
+        to {
+            width: 0%;
+        }
+    }
+    .toast-item {
+        animation: toastSlideIn 0.25s ease-out;
+    }
+    .toast-progress-bar {
+        animation: toastProgress 5s linear forwards;
+    }
+</style>
+
+<script>
+    (function () {
+        const container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        function dismiss(toast) {
+            toast.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+            toast.style.opacity = "0";
+            toast.style.transform = "translateX(24px)";
+            setTimeout(() => toast.remove(), 200);
+        }
+
+        container.querySelectorAll(".toast-item").forEach((toast) => {
+            toast.querySelector(".toast-close").addEventListener("click", () => dismiss(toast));
+            setTimeout(() => dismiss(toast), 5000);
+        });
+    })();
+</script>
+{% endif %}
