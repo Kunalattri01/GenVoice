@@ -10,26 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from dotenv import load_dotenv
 from pathlib import Path
 import os
-from pathlib import Path
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-a$@2g2_8g$2&n%+lolzs8uncjk3(j451+p^7%swu_)4f3&s#w!'
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "django-insecure-a$@2g2_8g$2&n%+lolzs8uncjk3(j451+p^7%swu_)4f3&s#w!"
-)
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = ['*']
 
@@ -69,11 +66,12 @@ DEFAULT_FROM_EMAIL = "info@genvoicenetwork.com"
 CONTACT_RECIPIENT_EMAIL = "info@genvoicenetwork.com"
 WRITER_SUBMISSIONS_EMAIL = "info@genvoicenetwork.com"
 
+
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = "smtpout.secureserver.net"
-EMAIL_HOST_USER = "info@genvoicenetwork.com"
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", 'RamEmpire@9999')
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 # ---- OPTION A: Port 465 (SSL) — GoDaddy's recommended port ----
 EMAIL_PORT = 465
@@ -108,23 +106,27 @@ WSGI_APPLICATION = 'MAIN.wsgi.application'
 AUTH_USER_MODEL = "accounts.User"
 
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#     "default": {
+#         "ENGINE": "mssql",
+#         "NAME": "GenVoice",      # Your database name
+#         "HOST": "DELL\SQLEXPRESS",
+#         "PORT": "",
+#         "OPTIONS": {
+#             "driver": "ODBC Driver 17 for SQL Server",
+#             "trusted_connection": "yes",
+#             "TrustServerCertificate": "yes",
+#         },
 #     }
 # }
 
 DATABASES = {
     "default": {
-        "ENGINE": "mssql",
-        "NAME": "GenVoice",      # Your database name
-        "HOST": "DELL\SQLEXPRESS",
-        "PORT": "",
-        "OPTIONS": {
-            "driver": "ODBC Driver 17 for SQL Server",
-            "trusted_connection": "yes",
-            "TrustServerCertificate": "yes",
-        },
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -165,12 +167,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
@@ -180,6 +182,3 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# EVENT_REGISTRY_API_KEY = 'f60e6a27-5803-4d57-a930-a387bcf5eb3d' # Live
-
-EVENT_REGISTRY_API_KEY = 'a8dd4f60-189d-4dbe-ae24-138106893eaa' # Development
